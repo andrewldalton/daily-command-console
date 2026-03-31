@@ -13,10 +13,16 @@ interface TaskState {
   reorderTasks: (tasks: Task[]) => void;
   importTasks: (ocrTasks: Array<{ title: string; category?: Task['category']; priority?: Task['priority'] }>, dayId: string) => void;
   loadTasks: () => void;
+  carryForwardTasks: () => void;
   getTasksByCategory: (category: Task['category']) => Task[];
 }
 
 const STORAGE_KEY = 'dcc_tasks';
+const LAST_DATE_KEY = 'dcc_last_date';
+
+const getTodayDateString = (): string => {
+  return new Date().toISOString().split('T')[0];
+};
 
 const persistTasks = (tasks: Task[]) => {
   try {
@@ -157,6 +163,72 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     set({ loading: true });
     const tasks = loadTasksFromStorage();
     set({ tasks, loading: false });
+
+    // Auto carry-forward: check if this is a new day
+    const todayDate = getTodayDateString();
+    const lastDate = localStorage.getItem(LAST_DATE_KEY);
+
+    if (lastDate && lastDate !== todayDate) {
+      // New day detected — carry forward incomplete tasks once
+      get().carryForwardTasks();
+    }
+
+    // Always update the stored date
+    localStorage.setItem(LAST_DATE_KEY, todayDate);
+  },
+
+  carryForwardTasks: () => {
+    const today = useDayStore.getState().today;
+    if (!today) return;
+
+    const allTasks = get().tasks;
+
+    // Find incomplete tasks from previous days (not today's dayId)
+    const incompletePreviousTasks = allTasks.filter(
+      (t) =>
+        t.dayId !== today.id &&
+        (t.status === 'pending' || t.status === 'deferred')
+    );
+
+    if (incompletePreviousTasks.length === 0) return;
+
+    const now = new Date().toISOString();
+    const currentLength = allTasks.length;
+
+    const carriedTasks: Task[] = incompletePreviousTasks.map((task, index) => ({
+      id: crypto.randomUUID(),
+      dayId: today.id,
+      title: task.title,
+      category: task.category,
+      priority: task.priority,
+      status: 'pending' as const,
+      source: 'carryover' as const,
+      estimatedMinutes: task.estimatedMinutes,
+      dueTime: task.dueTime,
+      notes: task.notes,
+      deferredCount: task.deferredCount + 1,
+      sortOrder: currentLength + index,
+      createdAt: now,
+      updatedAt: now,
+    }));
+
+    // Mark original tasks as deferred so they don't get carried again
+    const updatedOriginals = allTasks.map((task) => {
+      const isCarried = incompletePreviousTasks.some((t) => t.id === task.id);
+      if (isCarried) {
+        return {
+          ...task,
+          status: 'deferred' as const,
+          updatedAt: now,
+        };
+      }
+      return task;
+    });
+
+    const finalTasks = [...updatedOriginals, ...carriedTasks];
+    set({ tasks: finalTasks });
+    persistTasks(finalTasks);
+    useDayStore.getState().updateScore();
   },
 
   getTasksByCategory: (category) => {

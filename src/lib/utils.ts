@@ -107,6 +107,11 @@ export function parseOcrText(
         priority = 'medium';
         title = line.slice(1).trim();
         break;
+      case '~':
+        category = 'blitz';
+        priority = 'medium';
+        title = line.slice(1).trim();
+        break;
       default:
         // No prefix — defaults apply, keep full line as title
         break;

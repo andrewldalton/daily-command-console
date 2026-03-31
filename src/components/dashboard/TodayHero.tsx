@@ -56,6 +56,7 @@ export default function TodayHero() {
   const mustWinLeft = tasks.filter(
     (t) => t.category === 'must-win' && t.status !== 'completed'
   ).length;
+  const carriedOver = tasks.filter((t) => t.source === 'carryover' && t.status !== 'completed').length;
 
   return (
     <motion.section
@@ -342,7 +343,7 @@ export default function TodayHero() {
             >
               Today's Execution
             </span>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-4 gap-3">
               <div className="flex flex-col">
                 <span
                   className="text-3xl font-bold block tabular-nums"
@@ -384,7 +385,22 @@ export default function TodayHero() {
                   {mustWinLeft}
                 </span>
                 <span className="text-[10px] mt-1 uppercase tracking-wider" style={{ color: '#64748b' }}>
-                  must-win
+                  big 3
+                </span>
+              </div>
+              <div className="flex flex-col">
+                <span
+                  className="text-3xl font-bold block tabular-nums"
+                  style={{
+                    fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
+                    color: '#fbbf24',
+                    textShadow: '0 0 16px rgba(251,191,36,0.25)',
+                  }}
+                >
+                  {carriedOver}
+                </span>
+                <span className="text-[10px] mt-1 uppercase tracking-wider" style={{ color: '#64748b' }}>
+                  carried
                 </span>
               </div>
             </div>

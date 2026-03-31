@@ -8,6 +8,7 @@ import {
   ChevronDown,
   ChevronRight,
   Check,
+  RotateCcw,
 } from 'lucide-react';
 import type { Task } from '../../types';
 
@@ -16,13 +17,15 @@ const CATEGORY_COLORS: Record<Task['category'], string> = {
   work: '#38bdf8',
   personal: '#a78bfa',
   'follow-up': '#fbbf24',
+  blitz: '#34d399',
 };
 
 const CATEGORY_LABEL: Record<Task['category'], string> = {
-  'must-win': 'Must Win',
+  'must-win': 'Big 3',
   work: 'Work',
   personal: 'Personal',
   'follow-up': 'Follow-Up',
+  blitz: 'Blitz',
 };
 
 const PRIORITY_DOT: Record<Task['priority'], string> = {
@@ -160,6 +163,14 @@ export default function TaskCard({
             <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-medium tracking-wide uppercase bg-white/[0.03] text-[#64748b] border border-white/[0.06]">
               {SOURCE_LABEL[task.source]}
             </span>
+
+            {/* Carry-forward badge */}
+            {task.source === 'carryover' && (
+              <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] font-medium tracking-wide uppercase bg-[#fbbf24]/10 text-[#fbbf24] border border-[#fbbf24]/20">
+                <RotateCcw className="w-2.5 h-2.5" />
+                {task.deferredCount > 1 ? `Carried \u00d7${task.deferredCount}` : 'Carried over'}
+              </span>
+            )}
 
             {/* Deferred badge */}
             {isDeferred && (

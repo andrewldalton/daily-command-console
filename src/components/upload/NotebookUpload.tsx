@@ -28,6 +28,7 @@ const CATEGORY_COLORS: Record<Task['category'], string> = {
   work: 'text-[#38bdf8] bg-[#38bdf8]/10 border-[#38bdf8]/20',
   personal: 'text-[#a78bfa] bg-[#a78bfa]/10 border-[#a78bfa]/20',
   'follow-up': 'text-[#fbbf24] bg-[#fbbf24]/10 border-[#fbbf24]/20',
+  blitz: 'text-[#34d399] bg-[#34d399]/10 border-[#34d399]/20',
 };
 
 export default function NotebookUpload() {
@@ -225,7 +226,7 @@ export default function NotebookUpload() {
                 Drop or click to upload a notebook page
               </span>
               <span className="ml-auto text-[9px] font-mono text-[var(--color-text-disabled)] hidden sm:inline">
-                ! must-win &nbsp; * work &nbsp; - personal &nbsp; ? follow-up
+                ! big 3 &nbsp; * work &nbsp; - personal &nbsp; ? follow-up &nbsp; ~ blitz
               </span>
               <input
                 ref={fileInputRef}
@@ -363,7 +364,7 @@ export default function NotebookUpload() {
                 <textarea
                   value={ocrText}
                   onChange={(e) => handleOcrChange(e.target.value)}
-                  placeholder={"Type or paste your tasks here...\n! = must-win  * = work  - = personal  ? = follow-up"}
+                  placeholder={"Type or paste your tasks here...\n! = big 3  * = work  - = personal  ? = follow-up  ~ = blitz"}
                   rows={4}
                   className="w-full rounded-[var(--radius-sm)] px-3 py-2 text-base font-mono text-[#e2e8f0] placeholder:text-[#475569] focus:outline-none focus:border-[#38bdf8] focus:shadow-[0_0_12px_rgba(56,189,248,0.15)] transition-all duration-150 resize-none"
                   style={{

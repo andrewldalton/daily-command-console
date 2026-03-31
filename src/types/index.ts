@@ -2,7 +2,7 @@ export interface Task {
   id: string;
   dayId: string;
   title: string;
-  category: 'must-win' | 'work' | 'personal' | 'follow-up';
+  category: 'must-win' | 'work' | 'personal' | 'follow-up' | 'blitz';
   priority: 'high' | 'medium' | 'low';
   status: 'pending' | 'completed' | 'deferred';
   source: 'notebook' | 'manual' | 'carryover';

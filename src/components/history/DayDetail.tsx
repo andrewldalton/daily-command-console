@@ -76,6 +76,7 @@ const categoryColors: Record<Task['category'], string> = {
   work: 'var(--color-accent)',
   personal: 'var(--color-success)',
   'follow-up': 'var(--color-warning)',
+  blitz: '#34d399',
 };
 
 function CategoryBadge({ category }: { category: Task['category'] }) {

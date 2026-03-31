@@ -11,13 +11,15 @@ interface CategoryConfig {
   key: Task['category'];
   label: string;
   color: string;
+  maxPending?: number;
 }
 
 const CATEGORIES: CategoryConfig[] = [
   {
     key: 'must-win',
-    label: 'Must Win Today',
+    label: 'Big 3',
     color: '#38bdf8',
+    maxPending: 3,
   },
   {
     key: 'work',
@@ -32,6 +34,11 @@ const CATEGORIES: CategoryConfig[] = [
   {
     key: 'follow-up',
     label: 'Follow-Up',
+    color: '#38bdf8',
+  },
+  {
+    key: 'blitz',
+    label: 'Daily Blitz',
     color: '#38bdf8',
   },
 ];
@@ -50,6 +57,7 @@ function CategorySection({ config }: { config: CategoryConfig }) {
   const categoryTasks = tasks.filter((t) => t.category === config.key);
   const pendingTasks = categoryTasks.filter((t) => t.status !== 'completed');
   const completedTasks = categoryTasks.filter((t) => t.status === 'completed');
+  const atMaxPending = config.maxPending != null && pendingTasks.length >= config.maxPending;
 
   const handleQuickAdd = useCallback(() => {
     const title = quickAddValue.trim();
@@ -96,13 +104,22 @@ function CategorySection({ config }: { config: CategoryConfig }) {
             {pendingTasks.length}
           </span>
         </div>
-        <button
-          onClick={openQuickAdd}
-          className="p-1 rounded-md text-[#64748b] hover:text-[#94a3b8] hover:bg-white/[0.06] transition-all duration-150"
-          title="Add task"
-        >
-          <Plus className="w-4 h-4" />
-        </button>
+        {atMaxPending ? (
+          <span
+            className="text-[10px] font-mono font-semibold text-[#fbbf24] bg-[#fbbf24]/10 px-2 py-0.5 rounded-full border border-[#fbbf24]/20"
+            title={`Maximum ${config.maxPending} tasks reached`}
+          >
+            {pendingTasks.length}/{config.maxPending}
+          </span>
+        ) : (
+          <button
+            onClick={openQuickAdd}
+            className="p-1 rounded-md text-[#64748b] hover:text-[#94a3b8] hover:bg-white/[0.06] transition-all duration-150"
+            title="Add task"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Task list */}
