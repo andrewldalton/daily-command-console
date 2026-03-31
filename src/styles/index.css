@@ -1,0 +1,412 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────
+   Google Fonts
+   ───────────────────────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap");
+
+/* ─────────────────────────────────────────────────────────
+   Carbon Edge — Design Tokens (Dark Default)
+   ───────────────────────────────────────────────────────── */
+:root {
+  /* ── Color: Backgrounds ── */
+  --color-bg-root: #08090e;
+  --color-bg-base: #0c0f16;
+  --color-bg-surface: #12161f;
+  --color-bg-overlay: #181d28;
+  --color-bg-hover: #1e2430;
+
+  /* ── Color: Borders ── */
+  --color-border-subtle: rgba(255, 255, 255, 0.06);
+  --color-border-default: rgba(255, 255, 255, 0.10);
+  --color-border-strong: rgba(255, 255, 255, 0.16);
+
+  /* ── Color: Text ── */
+  --color-text-primary: #f0f2f5;
+  --color-text-secondary: #8b95a5;
+  --color-text-tertiary: #505a6a;
+  --color-text-disabled: #353d4d;
+
+  /* ── Color: Accent (Electric Cyan-Mint) ── */
+  --color-accent: #06d6a0;
+  --color-accent-hover: #05c090;
+  --color-accent-muted: rgba(6, 214, 160, 0.12);
+  --color-accent-glow: rgba(6, 214, 160, 0.25);
+
+  /* ── Color: Semantic ── */
+  --color-success: #10b981;
+  --color-success-muted: rgba(16, 185, 129, 0.12);
+  --color-warning: #f59e0b;
+  --color-warning-muted: rgba(245, 158, 11, 0.12);
+  --color-danger: #f43f5e;
+  --color-danger-muted: rgba(244, 63, 94, 0.12);
+
+  /* ── Color: Gold (Bible Verse) ── */
+  --color-gold: #c9a96e;
+  --color-gold-muted: rgba(201, 169, 110, 0.12);
+
+  /* ── Typography ── */
+  --font-ui: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  --font-serif: "Cormorant Garamond", "Georgia", serif;
+
+  --text-xs: clamp(0.6875rem, 0.65rem + 0.15vw, 0.75rem);
+  --text-sm: clamp(0.75rem, 0.7rem + 0.2vw, 0.875rem);
+  --text-base: clamp(0.875rem, 0.82rem + 0.22vw, 1rem);
+  --text-lg: clamp(1rem, 0.92rem + 0.32vw, 1.125rem);
+  --text-xl: clamp(1.125rem, 1rem + 0.5vw, 1.375rem);
+  --text-2xl: clamp(1.375rem, 1.15rem + 0.9vw, 1.75rem);
+  --text-3xl: clamp(1.75rem, 1.4rem + 1.4vw, 2.25rem);
+  --text-4xl: clamp(2.25rem, 1.7rem + 2.2vw, 3rem);
+
+  --leading-tight: 1.2;
+  --leading-snug: 1.35;
+  --leading-normal: 1.55;
+  --leading-relaxed: 1.7;
+
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.02em;
+  --tracking-wider: 0.06em;
+
+  /* ── Spacing ── */
+  --space-0: 0;
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* ── Border Radius ── */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 20px rgba(6, 214, 160, 0.15);
+
+  /* ── Motion ── */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ── Z-index ── */
+  --z-base: 0;
+  --z-sticky: 100;
+  --z-dropdown: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-toast: 600;
+  --z-max: 9999;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Carbon Edge — Light Theme
+   ───────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  /* ── Backgrounds ── */
+  --color-bg-root: #f8f9fb;
+  --color-bg-base: #f0f2f5;
+  --color-bg-surface: #ffffff;
+  --color-bg-overlay: #f5f6f8;
+  --color-bg-hover: #ebedf2;
+
+  /* ── Borders ── */
+  --color-border-subtle: rgba(0, 0, 0, 0.06);
+  --color-border-default: rgba(0, 0, 0, 0.10);
+  --color-border-strong: rgba(0, 0, 0, 0.16);
+
+  /* ── Text ── */
+  --color-text-primary: #0c0f16;
+  --color-text-secondary: #4a5568;
+  --color-text-tertiary: #8b95a5;
+  --color-text-disabled: #c0c8d4;
+
+  /* ── Accent ── */
+  --color-accent: #059680;
+  --color-accent-hover: #048a75;
+  --color-accent-muted: rgba(5, 150, 128, 0.10);
+  --color-accent-glow: rgba(5, 150, 128, 0.15);
+
+  /* ── Semantic ── */
+  --color-success: #059669;
+  --color-success-muted: rgba(5, 150, 105, 0.10);
+  --color-warning: #d97706;
+  --color-warning-muted: rgba(217, 119, 6, 0.10);
+  --color-danger: #dc2626;
+  --color-danger-muted: rgba(220, 38, 38, 0.10);
+
+  /* ── Gold ── */
+  --color-gold: #8b6914;
+  --color-gold-muted: rgba(139, 105, 20, 0.10);
+
+  /* ── Shadows (lighter for light theme) ── */
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.10);
+  --shadow-glow: 0 0 12px rgba(5, 150, 128, 0.08);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Base Styles
+   ───────────────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-ui);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+  background-color: var(--color-bg-root);
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* ── Theme Transitions ── */
+body,
+.surface,
+.surface-interactive {
+  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+}
+
+/* ── Noise Texture Overlay ── */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.015;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+[data-theme="light"] body::before {
+  opacity: 0.012;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Selection
+   ───────────────────────────────────────────────────────── */
+::selection {
+  background-color: var(--color-accent);
+  color: #08090e;
+}
+
+::-moz-selection {
+  background-color: var(--color-accent);
+  color: #08090e;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Scrollbar
+   ───────────────────────────────────────────────────────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-default) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-default);
+  border-radius: var(--radius-full);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-border-strong);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Focus Styles
+   ───────────────────────────────────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Typography Utilities
+   ───────────────────────────────────────────────────────── */
+.font-ui {
+  font-family: var(--font-ui);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1, "ss01" 1;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Surface & Card Styles
+   ───────────────────────────────────────────────────────── */
+.surface {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.surface:hover {
+  border-color: var(--color-border-strong);
+}
+
+.surface-interactive {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.surface-interactive:hover {
+  border-color: var(--color-accent-muted);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Glassmorphism Utilities
+   ───────────────────────────────────────────────────────── */
+.glass {
+  background: rgba(12, 15, 22, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border-subtle);
+}
+
+.glass-heavy {
+  background: rgba(8, 9, 14, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--color-border-default);
+}
+
+[data-theme="light"] .glass {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border-subtle);
+}
+
+[data-theme="light"] .glass-heavy {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--color-border-default);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Stat / Number Display
+   ───────────────────────────────────────────────────────── */
+.stat-value {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-text-primary);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Bible Verse Section
+   ───────────────────────────────────────────────────────── */
+.verse-text {
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--color-text-primary);
+  line-height: 1.65;
+}
+
+.verse-reference {
+  font-family: var(--font-serif);
+  color: var(--color-gold);
+  font-weight: 600;
+}
+
+/* ─────────────────────────────────────────────────────────
+   Accent Stripe
+   ───────────────────────────────────────────────────────── */
+.accent-stripe {
+  height: 2px;
+  background: linear-gradient(90deg, var(--color-accent), rgba(6, 214, 160, 0.3), transparent);
+  border-radius: 1px;
+}
+
+[data-theme="light"] .accent-stripe {
+  background: linear-gradient(90deg, var(--color-accent), rgba(5, 150, 128, 0.3), transparent);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Transition Utilities
+   ───────────────────────────────────────────────────────── */
+.transition-fast {
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-out);
+}
+
+.transition-normal {
+  transition-duration: var(--duration-normal);
+  transition-timing-function: var(--ease-out);
+}
+
+.transition-slow {
+  transition-duration: var(--duration-slow);
+  transition-timing-function: var(--ease-out);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Reduced Motion
+   ───────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
