@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuthStore } from './store/authStore';
 import { useTaskStore } from './store/taskStore';
 import { useDayStore } from './store/dayStore';
@@ -11,45 +11,6 @@ import DashboardPage from './components/dashboard/DashboardPage';
 import HistoryPage from './components/history/HistoryPage';
 import SettingsPage from './components/layout/SettingsPage';
 
-function LoadingScreen() {
-  return (
-    <div
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        background: 'var(--color-bg-root)',
-      }}
-    >
-      <div className="accent-stripe" style={{ width: '100%' }} />
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <div
-          style={{
-            width: '32px',
-            height: '2px',
-            background: 'var(--color-accent-muted)',
-            borderRadius: '1px',
-            animation: 'loadPulse 1.5s ease-in-out infinite',
-          }}
-        />
-        <style>{`
-          @keyframes loadPulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-          }
-        `}</style>
-      </div>
-    </div>
-  );
-}
-
 export default function App() {
   const { authenticated, loading: authLoading, checkAuth } = useAuthStore();
   const { activeTab } = useUIStore();
@@ -58,24 +19,23 @@ export default function App() {
   const loadTasks = useTaskStore((s) => s.loadTasks);
   const loadDailyInfo = useDailyInfoStore((s) => s.loadDailyInfo);
   const initProspects = useProspectStore((s) => s.initProspects);
+  const [storesReady, setStoresReady] = useState(false);
 
   // Check auth on mount
   useEffect(() => {
     checkAuth();
   }, [checkAuth]);
 
-  // Listen for unauthorized events (e.g. expired session)
+  // Listen for unauthorized events
   useEffect(() => {
     const handleUnauthorized = () => {
       useAuthStore.setState({ authenticated: false });
     };
     window.addEventListener('dcc:unauthorized', handleUnauthorized);
-    return () => {
-      window.removeEventListener('dcc:unauthorized', handleUnauthorized);
-    };
+    return () => window.removeEventListener('dcc:unauthorized', handleUnauthorized);
   }, []);
 
-  // Initialize stores only after authentication succeeds
+  // Initialize stores after auth, then reveal
   useEffect(() => {
     if (authenticated) {
       initializeToday();
@@ -83,15 +43,25 @@ export default function App() {
       loadHistory();
       loadDailyInfo();
       initProspects();
+      // Small delay to let stores populate before rendering UI
+      const t = setTimeout(() => setStoresReady(true), 80);
+      return () => clearTimeout(t);
+    } else {
+      setStoresReady(false);
     }
   }, [authenticated, initializeToday, loadTasks, loadHistory, loadDailyInfo, initProspects]);
 
+  // Auth loading or stores initializing — show nothing (just bg color)
   if (authLoading) {
-    return <LoadingScreen />;
+    return <div style={{ minHeight: '100vh', background: '#1e2433' }} />;
   }
 
   if (!authenticated) {
     return <LoginScreen />;
+  }
+
+  if (!storesReady) {
+    return <div style={{ minHeight: '100vh', background: '#1e2433' }} />;
   }
 
   return (
