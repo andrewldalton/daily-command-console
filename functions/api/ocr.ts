@@ -19,11 +19,15 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
       {
         messages: [
           {
+            role: 'system',
+            content: 'You are an expert handwriting transcription assistant. You specialize in reading handwritten notebook pages, to-do lists, and task lists. You are very accurate at deciphering cursive and messy handwriting. Always do your best to read every word, even if partially legible. Output each task or item on its own line. Never add tasks that are not in the image. Never describe the image — only transcribe the text you see.',
+          },
+          {
             role: 'user',
             content: [
               {
                 type: 'text',
-                text: 'Extract all text from this handwritten notebook page. List each item on its own line as a task. If you see checkboxes, bullets, dashes, or numbers, include them. Return ONLY the extracted text, one task per line, nothing else.',
+                text: 'Read this photo of my handwritten notebook page carefully. Transcribe every line of text you can see, one item per line. These are my tasks and to-do items for the day. Read each word carefully — my handwriting may be messy but try your best. Output ONLY the transcribed text, nothing else. Do not add commentary or descriptions.',
               },
               {
                 type: 'image_url',
