@@ -1,74 +1,54 @@
 interface Env {
-  ANTHROPIC_API_KEY: string;
+  GOOGLE_VISION_API_KEY: string;
 }
 
 export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   try {
     const { image } = (await request.json()) as { image: string };
 
-    // Extract base64 and media type from data URI
-    const match = image.match(/^data:(image\/[^;]+);base64,(.+)$/);
-    if (!match) {
-      return Response.json(
-        { error: 'Invalid image format. Expected data URI.', rawText: '', tasks: [] },
-        { status: 400 }
-      );
-    }
-    const mediaType = match[1];
-    const base64Data = match[2];
+    // Extract base64 data from data URI
+    const base64Data = image.replace(/^data:image\/[^;]+;base64,/, '');
 
-    // Call Claude API with vision
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': env.ANTHROPIC_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1024,
-        messages: [
-          {
-            role: 'user',
-            content: [
-              {
-                type: 'image',
-                source: {
-                  type: 'base64',
-                  media_type: mediaType,
-                  data: base64Data,
-                },
-              },
-              {
-                type: 'text',
-                text: 'Read this photo of my handwritten notebook page. Transcribe every line of text exactly as written, one item per line. These are tasks and to-do items. Output ONLY the transcribed text — no commentary, no descriptions, no formatting. Just the raw text, one task per line.',
-              },
-            ],
-          },
-        ],
-      }),
-    });
+    // Call Google Cloud Vision API for handwriting detection
+    const response = await fetch(
+      `https://vision.googleapis.com/v1/images:annotate?key=${env.GOOGLE_VISION_API_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          requests: [
+            {
+              image: { content: base64Data },
+              features: [
+                { type: 'DOCUMENT_TEXT_DETECTION', maxResults: 1 },
+              ],
+            },
+          ],
+        }),
+      }
+    );
 
     if (!response.ok) {
       const errBody = await response.text();
       return Response.json(
-        { error: `Claude API error: ${response.status} — ${errBody.slice(0, 200)}`, rawText: '', tasks: [] },
+        { error: `Vision API error: ${response.status} — ${errBody.slice(0, 200)}`, rawText: '', tasks: [] },
         { status: 500 }
       );
     }
 
-    const result = (await response.json()) as {
-      content: Array<{ type: string; text?: string }>;
-    };
+    const result = (await response.json()) as any;
+    const annotation = result.responses?.[0];
 
-    const rawText =
-      result.content
-        ?.filter((c) => c.type === 'text')
-        .map((c) => c.text)
-        .join('\n') || '';
+    if (annotation?.error) {
+      return Response.json(
+        { error: `Vision API: ${annotation.error.message}`, rawText: '', tasks: [] },
+        { status: 500 }
+      );
+    }
 
-    if (!rawText || rawText.length < 3) {
+    const rawText = annotation?.fullTextAnnotation?.text || '';
+
+    if (!rawText || rawText.length < 2) {
       return Response.json({
         rawText: '',
         tasks: [],
@@ -77,9 +57,9 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
     }
 
     // Parse into task candidates
-    const lines = rawText.split('\n').filter((l) => l.trim().length > 0);
+    const lines = rawText.split('\n').filter((l: string) => l.trim().length > 0);
     const tasks = lines
-      .map((line) => {
+      .map((line: string) => {
         const trimmed = line
           .trim()
           .replace(/^[\-\*\•\✓\✗\☐\☑\[\]\(\)x\d+\.\)]+\s*/i, '')

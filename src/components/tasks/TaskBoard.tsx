@@ -64,7 +64,8 @@ function CategorySection({ config }: { config: CategoryConfig }) {
     });
 
     setQuickAddValue('');
-    setQuickAddOpen(false);
+    // Stay open for more tasks — refocus input
+    setTimeout(() => inputRef.current?.focus(), 50);
   }, [quickAddValue, today, addTask, config.key]);
 
   // Focus input when quick-add opens
@@ -116,15 +117,14 @@ function CategorySection({ config }: { config: CategoryConfig }) {
               transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
               className="overflow-hidden"
             >
-              <div className="flex items-center gap-2 mb-1.5">
+              <div className="flex flex-col gap-2 mb-1.5">
                 <input
                   ref={inputRef}
                   type="text"
                   value={quickAddValue}
                   onChange={(e) => setQuickAddValue(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      inputRef.current?.blur();
+                    if (e.key === 'Enter' && quickAddValue.trim()) {
                       handleQuickAdd();
                     }
                     if (e.key === 'Escape') {
@@ -132,18 +132,29 @@ function CategorySection({ config }: { config: CategoryConfig }) {
                       setQuickAddValue('');
                     }
                   }}
-                  placeholder="Type a task and press Enter..."
+                  placeholder="Type a task and press Enter to add more..."
                   className="flex-1 bg-transparent border-b border-white/10 px-1 py-1.5 text-base text-[#e2e8f0] placeholder:text-[#64748b] focus:outline-none focus:border-[#38bdf8]/40 transition-colors duration-150"
                 />
-                <button
-                  onClick={() => {
-                    setQuickAddOpen(false);
-                    setQuickAddValue('');
-                  }}
-                  className="text-[#64748b] hover:text-[#94a3b8] text-[10px] uppercase tracking-wider transition-colors"
-                >
-                  Esc
-                </button>
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    onClick={() => {
+                      setQuickAddOpen(false);
+                      setQuickAddValue('');
+                    }}
+                    className="px-3 py-1 rounded-md text-[10px] font-medium uppercase tracking-wider text-[#64748b] hover:text-[#94a3b8] hover:bg-white/[0.04] transition-colors"
+                  >
+                    Done
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (quickAddValue.trim()) handleQuickAdd();
+                    }}
+                    disabled={!quickAddValue.trim()}
+                    className="px-3 py-1 rounded-md text-[10px] font-medium uppercase tracking-wider bg-[#38bdf8] text-white hover:bg-[#0ea5e9] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                  >
+                    Add
+                  </button>
+                </div>
               </div>
             </motion.div>
           )}
