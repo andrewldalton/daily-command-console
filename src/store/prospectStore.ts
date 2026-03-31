@@ -22,6 +22,15 @@ interface ProspectState {
 
 const STORAGE_KEY = 'dcc_prospects';
 
+// Deterministic ID from company name so prospects survive reloads
+function stableId(company: string): string {
+  let hash = 0;
+  for (let i = 0; i < company.length; i++) {
+    hash = ((hash << 5) - hash + company.charCodeAt(i)) | 0;
+  }
+  return 'p-' + Math.abs(hash).toString(36);
+}
+
 function makeProspect(
   company: string,
   industry: string,
@@ -30,7 +39,7 @@ function makeProspect(
   source: string,
 ): Prospect {
   return {
-    id: crypto.randomUUID(),
+    id: stableId(company),
     company,
     industry,
     employeeRange,
@@ -301,28 +310,29 @@ export const useProspectStore = create<ProspectState>((set, get) => ({
   pool: [],
 
   initProspects: () => {
-    // v2: force reload with real DOL data (clear old mock cache)
     const VERSION_KEY = 'dcc_prospects_v';
-    const CURRENT_VERSION = '2';
+    const CURRENT_VERSION = '3'; // bumped to reset with stable IDs
+
+    const saved = loadFromStorage();
     const savedVersion = localStorage.getItem(VERSION_KEY);
 
-    if (savedVersion === CURRENT_VERSION) {
-      const saved = loadFromStorage();
-      if (saved && saved.active.length > 0) {
-        set({ active: saved.active, researched: saved.researched ?? [], pool: saved.pool });
-        return;
-      }
+    if (savedVersion === CURRENT_VERSION && saved && saved.active.length > 0) {
+      set({ active: saved.active, researched: saved.researched ?? [], pool: saved.pool ?? [] });
+      return;
     }
 
-    // Clear old data and reload
-    localStorage.removeItem(STORAGE_KEY);
+    // Rebuild: keep any researched companies from previous saves
+    const previouslyResearched = saved?.researched ?? [];
+    const researchedNames = new Set(previouslyResearched.map((p) => p.company));
+
+    // Filter out already-researched companies from the pool
+    const available = BUILT_IN_POOL.filter((p) => !researchedNames.has(p.company));
+    const active = available.slice(0, 5).map((p) => ({ ...p, status: 'active' as const }));
+    const pool = available.slice(5);
+
     localStorage.setItem(VERSION_KEY, CURRENT_VERSION);
-    // First time or reset: take 5 from the built-in pool
-    const allProspects = [...BUILT_IN_POOL];
-    const active = allProspects.slice(0, 5).map((p) => ({ ...p, status: 'active' as const }));
-    const pool = allProspects.slice(5);
-    set({ active, researched: [], pool });
-    saveToStorage({ active, researched: [], pool });
+    set({ active, researched: previouslyResearched, pool });
+    saveToStorage({ active, researched: previouslyResearched, pool });
   },
 
   markResearched: (id: string) => {
@@ -331,18 +341,20 @@ export const useProspectStore = create<ProspectState>((set, get) => ({
     if (!prospect) return;
 
     const newResearched = [...researched, { ...prospect, status: 'researched' as const }];
-    const newActive = active.filter((p) => p.id !== id);
+    // Remove from active by both id AND company name (belt and suspenders)
+    const newActive = active.filter((p) => p.id !== id && p.company !== prospect.company);
 
-    if (pool.length > 0) {
-      const next = { ...pool[0], status: 'active' as const };
+    // Also remove from pool by company name so it never comes back
+    let newPool = pool.filter((p) => p.company !== prospect.company);
+
+    if (newActive.length < 5 && newPool.length > 0) {
+      const next = { ...newPool[0], status: 'active' as const };
       newActive.push(next);
-      const newPool = pool.slice(1);
-      set({ active: newActive, researched: newResearched, pool: newPool });
-      saveToStorage({ active: newActive, researched: newResearched, pool: newPool });
-    } else {
-      set({ active: newActive, researched: newResearched });
-      saveToStorage({ active: newActive, researched: newResearched, pool: [] });
+      newPool = newPool.slice(1);
     }
+
+    set({ active: newActive, researched: newResearched, pool: newPool });
+    saveToStorage({ active: newActive, researched: newResearched, pool: newPool });
   },
 
   dismissProspect: (id: string) => {
