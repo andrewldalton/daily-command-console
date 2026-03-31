@@ -17,15 +17,13 @@ const CATEGORY_COLORS: Record<Task['category'], string> = {
   work: '#38bdf8',
   personal: '#a78bfa',
   'follow-up': '#fbbf24',
-  blitz: '#34d399',
 };
 
 const CATEGORY_LABEL: Record<Task['category'], string> = {
   'must-win': 'Big 3',
-  work: 'Work',
+  work: 'Blitz',
   personal: 'Personal',
   'follow-up': 'Follow-Up',
-  blitz: 'Blitz',
 };
 
 const PRIORITY_DOT: Record<Task['priority'], string> = {

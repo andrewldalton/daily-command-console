@@ -13,10 +13,9 @@ interface AddTaskModalProps {
 
 const CATEGORY_OPTIONS: { value: Task['category']; label: string }[] = [
   { value: 'must-win', label: 'Big 3' },
-  { value: 'work', label: 'Work' },
+  { value: 'work', label: 'Daily Blitz' },
   { value: 'personal', label: 'Personal' },
   { value: 'follow-up', label: 'Follow-Up' },
-  { value: 'blitz', label: 'Daily Blitz' },
 ];
 
 const PRIORITY_OPTIONS: { value: Task['priority']; label: string }[] = [

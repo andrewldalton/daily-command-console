@@ -23,7 +23,7 @@ const CATEGORIES: CategoryConfig[] = [
   },
   {
     key: 'work',
-    label: 'Work',
+    label: 'Daily Blitz',
     color: '#38bdf8',
   },
   {
@@ -34,11 +34,6 @@ const CATEGORIES: CategoryConfig[] = [
   {
     key: 'follow-up',
     label: 'Follow-Up',
-    color: '#38bdf8',
-  },
-  {
-    key: 'blitz',
-    label: 'Daily Blitz',
     color: '#38bdf8',
   },
 ];
