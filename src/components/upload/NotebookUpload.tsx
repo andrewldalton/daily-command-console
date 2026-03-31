@@ -171,14 +171,14 @@ export default function NotebookUpload() {
               onDragLeave={() => setDragOver(false)}
               className={`flex items-center gap-3 cursor-pointer rounded-[var(--radius-md)] border border-dashed transition-all duration-200 ${
                 dragOver
-                  ? 'border-[#06d6a0]/40 bg-[#06d6a0]/[0.05] shadow-[0_0_20px_rgba(6,214,160,0.15)]'
+                  ? 'border-[#38bdf8]/40 bg-[#38bdf8]/[0.05] shadow-[0_0_20px_rgba(56,189,248,0.15)]'
                   : 'border-white/[0.08] hover:border-white/[0.15] bg-[var(--color-bg-surface)]'
               } px-4 py-3`}
             >
               <div
                 className={`p-1.5 rounded-md transition-colors duration-200 ${
                   dragOver
-                    ? 'bg-[#06d6a0]/10 text-[#06d6a0]'
+                    ? 'bg-[#38bdf8]/10 text-[#38bdf8]'
                     : 'bg-white/[0.04] text-[var(--color-text-tertiary)]'
                 }`}
               >

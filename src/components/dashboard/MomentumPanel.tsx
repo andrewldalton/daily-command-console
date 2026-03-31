@@ -35,7 +35,7 @@ function ProgressRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="rgba(255,255,255,0.06)"
+          stroke="rgba(255,255,255,0.08)"
           strokeWidth={strokeWidth}
         />
         {/* Filled arc with glow */}
@@ -44,7 +44,7 @@ function ProgressRing({
           cy={size / 2}
           r={radius}
           fill="none"
-          stroke="#06d6a0"
+          stroke="#38bdf8"
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           strokeDasharray={circumference}
@@ -56,12 +56,12 @@ function ProgressRing({
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
-          className="font-mono text-3xl font-bold text-white/90"
-          style={{ textShadow: '0 0 20px rgba(6, 214, 160, 0.3)' }}
+          className="font-mono text-3xl font-bold text-[#e2e8f0]"
+          style={{ textShadow: '0 0 20px rgba(56, 189, 248, 0.4)' }}
         >
           {percentage}%
         </span>
-        <span className="text-[10px] font-medium uppercase tracking-widest text-white/25 mt-0.5">
+        <span className="text-[10px] font-medium uppercase tracking-widest text-[#64748b] mt-0.5">
           Execution Score
         </span>
       </div>
@@ -71,14 +71,14 @@ function ProgressRing({
 
 function StatCell({ value, label, color }: { value: number; label: string; color?: string }) {
   return (
-    <div className="flex flex-col items-center gap-1 bg-white/[0.03] border border-white/[0.06] rounded-lg p-3">
+    <div className="flex flex-col items-center gap-1 bg-white/[0.04] border border-white/[0.07] rounded-lg p-3">
       <span
         className="font-mono text-xl font-bold"
-        style={{ color: color ?? 'rgba(255,255,255,0.85)' }}
+        style={{ color: color ?? '#e2e8f0' }}
       >
         {value}
       </span>
-      <span className="text-[9px] font-medium uppercase tracking-wider text-white/25">
+      <span className="text-[9px] font-medium uppercase tracking-wider text-[#64748b]">
         {label}
       </span>
     </div>
@@ -93,15 +93,15 @@ function DayHealthBadge({ total }: { total: number }) {
 
   if (total < 5) {
     label = 'Light';
-    color = '#06d6a0';
+    color = '#38bdf8';
     Icon = Sun;
   } else if (total <= 12) {
     label = 'Normal';
-    color = '#22c55e';
+    color = '#a3e635';
     Icon = Zap;
   } else {
     label = 'Overloaded';
-    color = '#f43f5e';
+    color = '#f472b6';
     Icon = AlertTriangle;
     pulse = true;
   }
@@ -144,7 +144,7 @@ function WeekBars({ history }: { history: { score: number; date: string }[] }) {
 
   return (
     <div className="w-full flex flex-col items-center gap-1.5">
-      <span className="text-[10px] font-medium uppercase tracking-wider text-white/25">
+      <span className="text-[10px] font-medium uppercase tracking-wider text-[#64748b]">
         7-Day Trend
       </span>
       <div className="flex items-end gap-2 justify-center h-8">
@@ -158,7 +158,7 @@ function WeekBars({ history }: { history: { score: number; date: string }[] }) {
               className="rounded-sm"
               style={{
                 width: 6,
-                backgroundColor: `rgba(6, 214, 160, ${opacity})`,
+                backgroundColor: `rgba(56, 189, 248, ${opacity})`,
               }}
               initial={{ height: 0 }}
               animate={{ height }}
@@ -173,7 +173,7 @@ function WeekBars({ history }: { history: { score: number; date: string }[] }) {
           // Convert JS day (0=Sun) to label index (0=Mon)
           const labelIdx = dow === 0 ? 6 : dow - 1;
           return (
-            <span key={i} className="text-[9px] text-white/20 w-[6px] text-center font-mono">
+            <span key={i} className="text-[9px] text-[#64748b] w-[6px] text-center font-mono">
               {DAY_LETTERS[labelIdx]}
             </span>
           );
@@ -195,7 +195,7 @@ export default function MomentumPanel() {
 
   return (
     <motion.div
-      className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-6 flex flex-col items-center gap-6"
+      className="bg-[#252d3d]/60 border border-white/[0.06] rounded-lg p-6 flex flex-col items-center gap-6"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut', delay: 0.15 }}
@@ -206,9 +206,9 @@ export default function MomentumPanel() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full">
         <StatCell value={total} label="Total" />
-        <StatCell value={completed} label="Done" color="#06d6a0" />
+        <StatCell value={completed} label="Done" color="#38bdf8" />
         <StatCell value={remaining} label="Left" />
-        <StatCell value={deferred} label="Defer" color="#f59e0b" />
+        <StatCell value={deferred} label="Defer" color="#fbbf24" />
       </div>
 
       {/* Divider */}

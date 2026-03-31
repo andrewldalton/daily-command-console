@@ -17,22 +17,22 @@ const CATEGORIES: CategoryConfig[] = [
   {
     key: 'must-win',
     label: 'Must Win Today',
-    color: '#f43f5e',
+    color: '#38bdf8',
   },
   {
     key: 'work',
     label: 'Work',
-    color: '#06d6a0',
+    color: '#38bdf8',
   },
   {
     key: 'personal',
     label: 'Personal',
-    color: '#8b5cf6',
+    color: '#38bdf8',
   },
   {
     key: 'follow-up',
     label: 'Follow-Up',
-    color: '#f59e0b',
+    color: '#38bdf8',
   },
 ];
 
@@ -79,7 +79,7 @@ function CategorySection({ config }: { config: CategoryConfig }) {
   };
 
   return (
-    <div className="flex flex-col rounded-lg bg-white/[0.02] border border-white/[0.06] overflow-hidden">
+    <div className="flex flex-col rounded-lg bg-[#252d3d]/60 border border-white/[0.06] overflow-hidden">
       {/* Section header */}
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-2.5">
@@ -88,16 +88,16 @@ function CategorySection({ config }: { config: CategoryConfig }) {
             className="w-[3px] h-4 rounded-full flex-shrink-0"
             style={{ backgroundColor: config.color }}
           />
-          <h3 className="text-[11px] font-semibold tracking-wider uppercase text-white/50">
+          <h3 className="text-[11px] font-semibold tracking-wider uppercase text-[#94a3b8]">
             {config.label}
           </h3>
-          <span className="text-[10px] font-mono font-medium text-white/30 bg-white/[0.05] px-1.5 py-0.5 rounded-full">
+          <span className="text-[10px] font-mono font-medium text-[#64748b] bg-white/[0.06] px-1.5 py-0.5 rounded-full">
             {pendingTasks.length}
           </span>
         </div>
         <button
           onClick={openQuickAdd}
-          className="p-1 rounded-md text-white/25 hover:text-white/50 hover:bg-white/[0.05] transition-all duration-150"
+          className="p-1 rounded-md text-[#64748b] hover:text-[#94a3b8] hover:bg-white/[0.06] transition-all duration-150"
           title="Add task"
         >
           <Plus className="w-4 h-4" />
@@ -133,14 +133,14 @@ function CategorySection({ config }: { config: CategoryConfig }) {
                     }
                   }}
                   placeholder="Type a task and press Enter..."
-                  className="flex-1 bg-transparent border-b border-white/10 px-1 py-1.5 text-base text-white/80 placeholder:text-white/20 focus:outline-none focus:border-[#06d6a0]/40 transition-colors duration-150"
+                  className="flex-1 bg-transparent border-b border-white/10 px-1 py-1.5 text-base text-[#e2e8f0] placeholder:text-[#64748b] focus:outline-none focus:border-[#38bdf8]/40 transition-colors duration-150"
                 />
                 <button
                   onClick={() => {
                     setQuickAddOpen(false);
                     setQuickAddValue('');
                   }}
-                  className="text-white/20 hover:text-white/40 text-[10px] uppercase tracking-wider transition-colors"
+                  className="text-[#64748b] hover:text-[#94a3b8] text-[10px] uppercase tracking-wider transition-colors"
                 >
                   Esc
                 </button>
@@ -155,7 +155,7 @@ function CategorySection({ config }: { config: CategoryConfig }) {
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="text-[11px] text-white/15 text-center py-4 italic"
+              className="text-[11px] text-[#64748b]/60 text-center py-4 italic"
             >
               No tasks yet
             </motion.p>
@@ -177,7 +177,7 @@ function CategorySection({ config }: { config: CategoryConfig }) {
           <div className="mt-2">
             <button
               onClick={() => setShowCompleted(!showCompleted)}
-              className="flex items-center gap-1.5 text-[10px] font-medium text-white/20 hover:text-white/35 uppercase tracking-wider transition-colors"
+              className="flex items-center gap-1.5 text-[10px] font-medium text-[#64748b] hover:text-[#94a3b8] uppercase tracking-wider transition-colors"
             >
               {showCompleted ? (
                 <ChevronDown className="w-3 h-3" />

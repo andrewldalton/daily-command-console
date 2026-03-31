@@ -24,23 +24,23 @@ export default function AppShell({ children }: { children: ReactNode }) {
   return (
     <div
       className="min-h-screen flex flex-col"
-      style={{ backgroundColor: 'var(--color-bg-root)' }}
+      style={{ backgroundColor: '#1e2433' }}
     >
-      {/* ── Brand Gradient Stripe ── */}
+      {/* ── Brand Gradient Stripe (blue -> violet -> pink) ── */}
       <div
-        className="h-[2px] w-full flex-shrink-0 bg-gradient-to-r from-[#06d6a0] via-[#06b6d4] to-[#8b5cf6]"
+        className="h-[2px] w-full flex-shrink-0 bg-gradient-to-r from-[#38bdf8] via-[#a78bfa] to-[#f472b6]"
         style={{ zIndex: 60 }}
       />
 
-      {/* ── Top Bar ── */}
+      {/* ── Top Bar (Glass Nav) ── */}
       <header
         className="sticky top-0 flex items-center justify-between px-5 py-3 md:px-8"
         style={{
           zIndex: 'var(--z-sticky)',
           backdropFilter: 'blur(20px)',
           WebkitBackdropFilter: 'blur(20px)',
-          backgroundColor: 'rgba(8,9,14,0.8)',
-          borderBottom: '1px solid rgba(255,255,255,0.06)',
+          backgroundColor: 'rgba(24, 28, 40, 0.85)',
+          borderBottom: '1px solid rgba(255,255,255,0.08)',
         }}
       >
         {/* Left: Logo + Desktop Nav */}
@@ -48,9 +48,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
           <span
             className="text-xs sm:text-sm font-semibold uppercase truncate max-w-[140px] sm:max-w-none"
             style={{
-              color: 'var(--color-text-tertiary)',
+              color: '#64748b',
               letterSpacing: '0.2em',
-              textShadow: '0 0 30px rgba(6,214,160,0.08)',
+              textShadow: '0 0 30px rgba(56,189,248,0.12)',
             }}
           >
             Command Console
@@ -66,15 +66,15 @@ export default function AppShell({ children }: { children: ReactNode }) {
                   onClick={() => setActiveTab(id)}
                   className="relative px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.15em] rounded transition-colors cursor-pointer"
                   style={{
-                    color: isActive ? '#06d6a0' : 'var(--color-text-tertiary)',
+                    color: isActive ? '#38bdf8' : '#64748b',
                     backgroundColor: 'transparent',
                     border: 'none',
                   }}
                   onMouseEnter={(e) => {
-                    if (!isActive) e.currentTarget.style.color = 'var(--color-text-secondary)';
+                    if (!isActive) e.currentTarget.style.color = '#94a3b8';
                   }}
                   onMouseLeave={(e) => {
-                    if (!isActive) e.currentTarget.style.color = 'var(--color-text-tertiary)';
+                    if (!isActive) e.currentTarget.style.color = '#64748b';
                   }}
                 >
                   {label}
@@ -82,7 +82,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
                     <motion.div
                       layoutId="desktop-nav-underline"
                       className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
-                      style={{ backgroundColor: '#06d6a0' }}
+                      style={{ backgroundColor: '#38bdf8' }}
                       transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                     />
                   )}
@@ -96,7 +96,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <div className="flex items-center gap-3 flex-shrink-0">
           <span
             className="text-[11px] font-medium hidden sm:block tabular-nums"
-            style={{ color: 'var(--color-text-tertiary)', letterSpacing: '0.04em' }}
+            style={{ color: '#64748b', letterSpacing: '0.04em' }}
           >
             {formatTopBarDate()}
           </span>
@@ -105,7 +105,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
             onClick={toggleTheme}
             className="p-2 rounded-lg transition-all cursor-pointer"
             style={{
-              color: 'var(--color-text-secondary)',
+              color: '#94a3b8',
               backgroundColor: 'transparent',
               border: '1px solid transparent',
             }}
@@ -141,8 +141,8 @@ export default function AppShell({ children }: { children: ReactNode }) {
           zIndex: 'var(--z-sticky)',
           backdropFilter: 'blur(24px)',
           WebkitBackdropFilter: 'blur(24px)',
-          backgroundColor: 'rgba(8,9,14,0.85)',
-          borderTop: '1px solid rgba(255,255,255,0.06)',
+          backgroundColor: 'rgba(24, 28, 40, 0.85)',
+          borderTop: '1px solid rgba(255,255,255,0.08)',
         }}
       >
         {navItems.map(({ id, label, icon: Icon }) => {
@@ -153,7 +153,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
               onClick={() => setActiveTab(id)}
               className="relative flex flex-col items-center gap-0.5 px-4 py-1.5 rounded-lg transition-colors cursor-pointer"
               style={{
-                color: isActive ? '#06d6a0' : 'var(--color-text-tertiary)',
+                color: isActive ? '#38bdf8' : '#64748b',
                 backgroundColor: 'transparent',
                 border: 'none',
               }}
@@ -165,7 +165,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
                 <motion.div
                   layoutId="mobile-nav-pip"
                   className="absolute -top-1 w-4 h-[2px] rounded-full"
-                  style={{ backgroundColor: '#06d6a0' }}
+                  style={{ backgroundColor: '#38bdf8' }}
                   transition={{ type: 'spring', stiffness: 500, damping: 35 }}
                 />
               )}

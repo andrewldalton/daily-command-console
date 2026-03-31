@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta name="theme-color" content="#08090e" />
+    <meta name="theme-color" content="#181c28" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='2' y='2' width='28' height='28' rx='4' fill='%2308090e' stroke='%2306d6a0' stroke-width='2'/><text x='8' y='22' font-family='monospace' font-size='16' fill='%2306d6a0'>%3E_</text></svg>" />
     <title>Daily Command Console</title>
     <script>
@@ -13,11 +13,11 @@
         var t = 'dark';
         try { t = localStorage.getItem('dcc_theme') || 'dark'; } catch(e){}
         document.documentElement.dataset.theme = t;
-        document.body.style.background = t === 'light' ? '#f8f9fb' : '#08090e';
+        document.body.style.background = t === 'light' ? '#f8f9fc' : '#181c28';
       })();
     </script>
   </head>
-  <body style="background: #08090e;">
+  <body style="background: #181c28;">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

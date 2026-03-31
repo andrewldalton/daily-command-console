@@ -71,7 +71,7 @@ export default function TodayHero() {
           className="font-bold leading-tight tracking-tight"
           style={{
             fontSize: 'clamp(1.75rem, 5vw, 3rem)',
-            color: 'var(--color-text-primary)',
+            color: '#e2e8f0',
           }}
         >
           {getGreeting()}
@@ -81,8 +81,8 @@ export default function TodayHero() {
           className="text-base sm:text-lg font-medium tabular-nums"
           style={{
             fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-            color: '#06d6a0',
-            textShadow: '0 0 20px rgba(6,214,160,0.25)',
+            color: '#38bdf8',
+            textShadow: '0 0 20px rgba(56,189,248,0.3)',
           }}
         >
           {formatTime(now)}
@@ -93,7 +93,7 @@ export default function TodayHero() {
       <motion.div variants={item} className="flex items-center flex-wrap gap-3 mb-6">
         <span
           className="text-sm font-medium"
-          style={{ color: 'var(--color-text-tertiary)' }}
+          style={{ color: '#64748b' }}
         >
           {formatDate()}
         </span>
@@ -103,9 +103,9 @@ export default function TodayHero() {
             style={{
               backdropFilter: 'blur(12px)',
               WebkitBackdropFilter: 'blur(12px)',
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: 'var(--color-text-secondary)',
+              backgroundColor: 'rgba(167,139,250,0.15)',
+              border: '1px solid rgba(167,139,250,0.2)',
+              color: '#a78bfa',
             }}
           >
             {nationalDay.name}
@@ -113,45 +113,50 @@ export default function TodayHero() {
         )}
       </motion.div>
 
-      {/* ── Info Cards Row ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {/* ── Info Cards Row (equal height) ── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
         {/* ═══ Weather Card ═══ */}
         {weather && (
           <motion.div
             variants={item}
-            className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col gap-3 transition-all group"
+            className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col gap-3 transition-all duration-300 group"
             style={{
-              backgroundColor: 'rgba(255,255,255,0.03)',
+              backgroundColor: '#252d3d',
               border: '1px solid rgba(255,255,255,0.08)',
             }}
             whileHover={{
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              borderColor: 'rgba(6,214,160,0.15)',
+              boxShadow: '0 0 24px rgba(56,189,248,0.08)',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = 'rgba(56,189,248,0.15)';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)';
             }}
           >
-            {/* Accent stripe */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#06d6a0] via-[#06b6d4] to-transparent" />
+            {/* Sky blue accent stripe */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#38bdf8] via-[#0ea5e9] to-transparent" />
 
             {/* Spotlight on hover */}
             <div
               className="absolute top-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
               style={{
-                background: 'radial-gradient(circle, rgba(6,214,160,0.06) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(56,189,248,0.08) 0%, transparent 70%)',
               }}
             />
 
             <div className="flex items-start justify-between">
               <div className="flex flex-col gap-1">
                 <div className="flex items-center gap-2">
-                  <Cloud size={14} style={{ color: '#06d6a0' }} />
+                  <Cloud size={14} style={{ color: '#38bdf8' }} />
                   <span
                     className="text-[9px] font-semibold uppercase tracking-[0.15em]"
-                    style={{ color: 'var(--color-text-tertiary)' }}
+                    style={{ color: '#64748b' }}
                   >
                     {weather.location}
                   </span>
                 </div>
-                <p className="text-xs mt-1" style={{ color: 'var(--color-text-secondary)' }}>
+                <p className="text-xs mt-1" style={{ color: '#94a3b8' }}>
                   {weather.current.condition}
                 </p>
               </div>
@@ -159,15 +164,15 @@ export default function TodayHero() {
                 className="text-4xl font-bold tabular-nums"
                 style={{
                   fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                  color: 'var(--color-text-primary)',
-                  textShadow: '0 0 20px rgba(6,214,160,0.2)',
+                  color: '#e2e8f0',
+                  textShadow: '0 0 20px rgba(56,189,248,0.25)',
                 }}
               >
                 {weather.current.temp}&deg;
               </span>
             </div>
 
-            <div className="flex items-center gap-3 text-xs" style={{ color: 'var(--color-text-tertiary)' }}>
+            <div className="flex items-center gap-3 text-xs" style={{ color: '#64748b' }}>
               <span className="tabular-nums" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
                 H {weather.high}&deg;
               </span>
@@ -200,7 +205,7 @@ export default function TodayHero() {
                   >
                     <span
                       className="text-[8px] font-medium uppercase"
-                      style={{ color: 'var(--color-text-tertiary)' }}
+                      style={{ color: '#64748b' }}
                     >
                       {h.time}
                     </span>
@@ -208,7 +213,7 @@ export default function TodayHero() {
                       className="text-xs font-semibold tabular-nums mt-0.5"
                       style={{
                         fontFamily: "'JetBrains Mono', monospace",
-                        color: 'var(--color-text-secondary)',
+                        color: '#94a3b8',
                       }}
                     >
                       {h.temp}&deg;
@@ -224,32 +229,37 @@ export default function TodayHero() {
         {bibleVerse && (
           <motion.div
             variants={item}
-            className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col gap-3 transition-all group"
+            className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col gap-3 transition-all duration-300 group"
             style={{
-              backgroundColor: 'rgba(255,255,255,0.03)',
+              backgroundColor: '#252d3d',
               border: '1px solid rgba(255,255,255,0.08)',
             }}
             whileHover={{
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              borderColor: 'rgba(201,169,110,0.15)',
+              boxShadow: '0 0 24px rgba(56,189,248,0.08)',
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = 'rgba(56,189,248,0.15)';
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)';
             }}
           >
-            {/* Gold accent stripe */}
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#c9a96e] via-[#e2c992] to-transparent" />
+            {/* Blue accent stripe */}
+            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#38bdf8] via-[#0ea5e9] to-transparent" />
 
             {/* Spotlight on hover */}
             <div
               className="absolute top-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
               style={{
-                background: 'radial-gradient(circle, rgba(201,169,110,0.06) 0%, transparent 70%)',
+                background: 'radial-gradient(circle, rgba(56,189,248,0.08) 0%, transparent 70%)',
               }}
             />
 
             <div className="flex items-center gap-2">
-              <BookOpen size={14} style={{ color: '#c9a96e' }} />
+              <BookOpen size={14} style={{ color: '#d4a94e' }} />
               <span
                 className="text-[9px] font-semibold uppercase tracking-[0.15em]"
-                style={{ color: '#c9a96e' }}
+                style={{ color: '#d4a94e' }}
               >
                 The Bible &middot; Daily Verse
               </span>
@@ -261,7 +271,7 @@ export default function TodayHero() {
                 fontFamily: "'Cormorant Garamond', 'Georgia', serif",
                 fontSize: '0.95rem',
                 fontStyle: 'italic',
-                color: 'var(--color-text-primary)',
+                color: '#e2e8f0',
                 lineHeight: 1.7,
               }}
             >
@@ -271,7 +281,7 @@ export default function TodayHero() {
             <p
               className="text-[10px] font-semibold uppercase"
               style={{
-                color: '#c9a96e',
+                color: '#d4a94e',
                 letterSpacing: '0.12em',
                 fontFamily: "'Cormorant Garamond', 'Georgia', serif",
                 fontVariant: 'small-caps',
@@ -285,8 +295,8 @@ export default function TodayHero() {
               <p
                 className="text-xs leading-relaxed mt-1 pt-3"
                 style={{
-                  color: 'var(--color-text-tertiary)',
-                  borderTop: '1px solid rgba(201,169,110,0.15)',
+                  color: '#64748b',
+                  borderTop: '1px solid rgba(212,169,78,0.15)',
                 }}
               >
                 {bibleVerse.reflection}
@@ -298,24 +308,29 @@ export default function TodayHero() {
         {/* ═══ Task Stats + Quote Card ═══ */}
         <motion.div
           variants={item}
-          className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col justify-between gap-4 transition-all group"
+          className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col justify-between gap-4 transition-all duration-300 group"
           style={{
-            backgroundColor: 'rgba(255,255,255,0.03)',
+            backgroundColor: '#252d3d',
             border: '1px solid rgba(255,255,255,0.08)',
           }}
           whileHover={{
-            backgroundColor: 'rgba(255,255,255,0.05)',
-            borderColor: 'rgba(6,214,160,0.15)',
+            boxShadow: '0 0 24px rgba(56,189,248,0.08)',
+          }}
+          onMouseEnter={(e) => {
+            (e.currentTarget as HTMLElement).style.borderColor = 'rgba(56,189,248,0.15)';
+          }}
+          onMouseLeave={(e) => {
+            (e.currentTarget as HTMLElement).style.borderColor = 'rgba(255,255,255,0.08)';
           }}
         >
-          {/* Accent stripe */}
-          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#06d6a0] via-[#8b5cf6] to-transparent" />
+          {/* Blue accent stripe */}
+          <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[#38bdf8] via-[#0ea5e9] to-transparent" />
 
           {/* Spotlight on hover */}
           <div
             className="absolute top-0 right-0 w-32 h-32 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
             style={{
-              background: 'radial-gradient(circle, rgba(6,214,160,0.06) 0%, transparent 70%)',
+              background: 'radial-gradient(circle, rgba(56,189,248,0.08) 0%, transparent 70%)',
             }}
           />
 
@@ -323,7 +338,7 @@ export default function TodayHero() {
           <div>
             <span
               className="text-[9px] font-semibold uppercase tracking-[0.15em] block mb-3"
-              style={{ color: 'var(--color-text-tertiary)' }}
+              style={{ color: '#64748b' }}
             >
               Today's Execution
             </span>
@@ -333,12 +348,12 @@ export default function TodayHero() {
                   className="text-3xl font-bold block tabular-nums"
                   style={{
                     fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                    color: 'var(--color-text-primary)',
+                    color: '#e2e8f0',
                   }}
                 >
                   {total}
                 </span>
-                <span className="text-[10px] mt-1 uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>
+                <span className="text-[10px] mt-1 uppercase tracking-wider" style={{ color: '#64748b' }}>
                   tasks
                 </span>
               </div>
@@ -347,13 +362,13 @@ export default function TodayHero() {
                   className="text-3xl font-bold block tabular-nums"
                   style={{
                     fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                    color: '#06d6a0',
-                    textShadow: '0 0 16px rgba(6,214,160,0.3)',
+                    color: '#a3e635',
+                    textShadow: '0 0 16px rgba(163,230,53,0.3)',
                   }}
                 >
                   {completed}
                 </span>
-                <span className="text-[10px] mt-1 uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>
+                <span className="text-[10px] mt-1 uppercase tracking-wider" style={{ color: '#64748b' }}>
                   done
                 </span>
               </div>
@@ -362,13 +377,13 @@ export default function TodayHero() {
                   className="text-3xl font-bold block tabular-nums"
                   style={{
                     fontFamily: "'JetBrains Mono', 'Fira Code', monospace",
-                    color: '#f43f5e',
-                    textShadow: '0 0 16px rgba(244,63,94,0.2)',
+                    color: '#f472b6',
+                    textShadow: '0 0 16px rgba(244,114,182,0.25)',
                   }}
                 >
                   {mustWinLeft}
                 </span>
-                <span className="text-[10px] mt-1 uppercase tracking-wider" style={{ color: 'var(--color-text-tertiary)' }}>
+                <span className="text-[10px] mt-1 uppercase tracking-wider" style={{ color: '#64748b' }}>
                   must-win
                 </span>
               </div>
@@ -378,7 +393,7 @@ export default function TodayHero() {
           {/* Section pip divider */}
           <div className="flex items-center gap-1.5">
             <div className="h-[1px] flex-1" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
-            <div className="w-1 h-1 rounded-full" style={{ backgroundColor: 'rgba(6,214,160,0.4)' }} />
+            <div className="w-1 h-1 rounded-full" style={{ backgroundColor: 'rgba(56,189,248,0.4)' }} />
             <div className="h-[1px] flex-1" style={{ backgroundColor: 'rgba(255,255,255,0.06)' }} />
           </div>
 
@@ -387,18 +402,18 @@ export default function TodayHero() {
             <div
               className="pl-3"
               style={{
-                borderLeft: '2px solid rgba(6,214,160,0.3)',
+                borderLeft: '2px solid rgba(56,189,248,0.35)',
               }}
             >
               <p
                 className="text-xs italic leading-relaxed"
-                style={{ color: 'var(--color-text-secondary)' }}
+                style={{ color: '#94a3b8' }}
               >
                 &ldquo;{quote.text}&rdquo;
               </p>
               <p
                 className="text-[9px] font-semibold uppercase tracking-[0.12em] mt-1.5"
-                style={{ color: 'var(--color-text-tertiary)' }}
+                style={{ color: '#64748b' }}
               >
                 &mdash; {quote.author}
               </p>

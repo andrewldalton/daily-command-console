@@ -42,7 +42,7 @@ export default function LoginScreen() {
           width: '600px',
           height: '300px',
           background:
-            'radial-gradient(ellipse, rgba(6, 214, 160, 0.04) 0%, transparent 70%)',
+            'radial-gradient(ellipse, rgba(56, 189, 248, 0.04) 0%, transparent 70%)',
           pointerEvents: 'none',
         }}
       />

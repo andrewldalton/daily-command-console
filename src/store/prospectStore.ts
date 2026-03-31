@@ -301,11 +301,22 @@ export const useProspectStore = create<ProspectState>((set, get) => ({
   pool: [],
 
   initProspects: () => {
-    const saved = loadFromStorage();
-    if (saved && saved.active.length > 0) {
-      set({ active: saved.active, researched: saved.researched ?? [], pool: saved.pool });
-      return;
+    // v2: force reload with real DOL data (clear old mock cache)
+    const VERSION_KEY = 'dcc_prospects_v';
+    const CURRENT_VERSION = '2';
+    const savedVersion = localStorage.getItem(VERSION_KEY);
+
+    if (savedVersion === CURRENT_VERSION) {
+      const saved = loadFromStorage();
+      if (saved && saved.active.length > 0) {
+        set({ active: saved.active, researched: saved.researched ?? [], pool: saved.pool });
+        return;
+      }
     }
+
+    // Clear old data and reload
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.setItem(VERSION_KEY, CURRENT_VERSION);
     // First time or reset: take 5 from the built-in pool
     const allProspects = [...BUILT_IN_POOL];
     const active = allProspects.slice(0, 5).map((p) => ({ ...p, status: 'active' as const }));

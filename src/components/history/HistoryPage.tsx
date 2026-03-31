@@ -19,10 +19,10 @@ import DayDetail from './DayDetail';
 function ScoreBadge({ score }: { score: number }) {
   const color =
     score >= 80
-      ? '#06d6a0'
+      ? '#38bdf8'
       : score >= 50
-        ? '#f59e0b'
-        : '#f43f5e';
+        ? '#fbbf24'
+        : '#f472b6';
 
   return (
     <div className="flex items-center gap-2">

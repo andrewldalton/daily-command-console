@@ -21,13 +21,15 @@ export default function DashboardPage() {
         <NotebookUpload />
       </div>
 
-      {/* ── Main Grid: Tasks + Sidebar ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4 sm:gap-6">
-        <div className="min-w-0 order-3 lg:order-1">
+      {/* ── Main Grid: Tasks (7 cols) + Sidebar (5 cols) — 58/42 split ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
+        {/* Left column: Tasks (7 cols on desktop) */}
+        <div className="min-w-0 lg:col-span-7 order-3 lg:order-1">
           <TaskBoard />
         </div>
 
-        <aside className="flex flex-col gap-4 order-2 lg:order-2">
+        {/* Right column: Sidebar widgets (5 cols on desktop) */}
+        <aside className="lg:col-span-5 flex flex-col gap-4 order-2 lg:order-2">
           <MomentumPanel />
           <ProspectsPipeline />
           <WinsFeed />

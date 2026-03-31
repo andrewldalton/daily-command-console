@@ -15,17 +15,17 @@ export default function ProspectsPipeline() {
     <div
       className="rounded-xl p-4"
       style={{
-        backgroundColor: 'rgba(255,255,255,0.03)',
+        backgroundColor: 'rgba(37,45,61,0.6)',
         border: '1px solid rgba(255,255,255,0.06)',
       }}
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <Target size={14} style={{ color: '#06d6a0' }} />
+          <Target size={14} style={{ color: '#38bdf8' }} />
           <span
             className="text-xs font-semibold uppercase tracking-wider"
-            style={{ color: 'var(--color-text-secondary)', letterSpacing: '0.1em' }}
+            style={{ color: '#94a3b8', letterSpacing: '0.1em' }}
           >
             Prospect Pipeline
           </span>
@@ -33,8 +33,8 @@ export default function ProspectsPipeline() {
         <span
           className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
           style={{
-            backgroundColor: 'rgba(6,214,160,0.12)',
-            color: '#06d6a0',
+            backgroundColor: 'rgba(56,189,248,0.15)',
+            color: '#38bdf8',
           }}
         >
           {active.length}
@@ -62,14 +62,14 @@ export default function ProspectsPipeline() {
               <div className="flex-1 min-w-0">
                 <p
                   className="text-sm font-semibold truncate"
-                  style={{ color: 'var(--color-text-primary)' }}
+                  style={{ color: '#e2e8f0' }}
                 >
                   {prospect.company}
                 </p>
-                <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-tertiary)' }}>
+                <p className="text-[10px] mt-0.5" style={{ color: '#64748b' }}>
                   {prospect.industry} &middot; {prospect.employeeRange} employees
                 </p>
-                <p className="text-xs mt-1" style={{ color: '#06d6a0' }}>
+                <p className="text-xs mt-1" style={{ color: '#38bdf8' }}>
                   {prospect.signal}
                 </p>
                 <span
@@ -77,7 +77,7 @@ export default function ProspectsPipeline() {
                   style={{
                     backgroundColor: 'rgba(255,255,255,0.05)',
                     border: '1px solid rgba(255,255,255,0.08)',
-                    color: 'var(--color-text-tertiary)',
+                    color: '#64748b',
                   }}
                 >
                   {prospect.source}
@@ -96,19 +96,19 @@ export default function ProspectsPipeline() {
                     borderRadius: '50%',
                     border: '1px solid rgba(255,255,255,0.12)',
                     backgroundColor: 'transparent',
-                    color: 'var(--color-text-tertiary)',
+                    color: '#64748b',
                     padding: 0,
                   }}
                   title="Mark researched"
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(6,214,160,0.2)';
-                    e.currentTarget.style.borderColor = '#06d6a0';
-                    e.currentTarget.style.color = '#06d6a0';
+                    e.currentTarget.style.backgroundColor = 'rgba(52,211,153,0.2)';
+                    e.currentTarget.style.borderColor = '#34d399';
+                    e.currentTarget.style.color = '#34d399';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.backgroundColor = 'transparent';
                     e.currentTarget.style.borderColor = 'rgba(255,255,255,0.12)';
-                    e.currentTarget.style.color = 'var(--color-text-tertiary)';
+                    e.currentTarget.style.color = '#64748b';
                   }}
                 >
                   <Check size={10} strokeWidth={2.5} />
@@ -123,18 +123,18 @@ export default function ProspectsPipeline() {
                     borderRadius: '50%',
                     border: 'none',
                     backgroundColor: 'transparent',
-                    color: 'var(--color-text-tertiary)',
+                    color: '#64748b',
                     opacity: 0.4,
                     padding: 0,
                   }}
                   title="Dismiss"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.opacity = '1';
-                    e.currentTarget.style.color = '#ef4444';
+                    e.currentTarget.style.color = '#f472b6';
                   }}
                   onMouseLeave={(e) => {
                     e.currentTarget.style.opacity = '0.4';
-                    e.currentTarget.style.color = 'var(--color-text-tertiary)';
+                    e.currentTarget.style.color = '#64748b';
                   }}
                 >
                   <X size={10} strokeWidth={2} />
@@ -146,7 +146,7 @@ export default function ProspectsPipeline() {
       </div>
 
       {/* Footer */}
-      <p className="text-[10px] mt-3" style={{ color: 'var(--color-text-tertiary)' }}>
+      <p className="text-[10px] mt-3" style={{ color: '#64748b' }}>
         {todayCount} researched today
       </p>
     </div>

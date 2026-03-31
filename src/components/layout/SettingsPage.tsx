@@ -19,12 +19,12 @@ import type { UserSettings } from '../../types';
 const SETTINGS_KEY = 'dcc_settings';
 
 const ACCENT_COLORS = [
-  { name: 'Cyan-Mint', value: '#06d6a0' },
-  { name: 'Violet', value: '#8b5cf6' },
-  { name: 'Rose', value: '#f43f5e' },
-  { name: 'Amber', value: '#f59e0b' },
-  { name: 'Blue', value: '#3b82f6' },
-  { name: 'Teal', value: '#06b6d4' },
+  { name: 'Sky Blue', value: '#38bdf8' },
+  { name: 'Violet', value: '#a78bfa' },
+  { name: 'Pink', value: '#f472b6' },
+  { name: 'Lime', value: '#a3e635' },
+  { name: 'Amber', value: '#fbbf24' },
+  { name: 'Emerald', value: '#34d399' },
 ];
 
 const DEFAULT_CATEGORIES = [
@@ -36,7 +36,7 @@ const DEFAULT_CATEGORIES = [
 
 const defaultSettings: UserSettings = {
   theme: 'dark',
-  accentColor: '#3b82f6',
+  accentColor: '#38bdf8',
   weatherLocation: 'Omaha, NE',
   showQuote: true,
   showNationalDay: true,
@@ -78,8 +78,8 @@ function PillToggle({
       onClick={() => onChange(!enabled)}
       className="relative w-11 h-6 rounded-full cursor-pointer transition-colors"
       style={{
-        backgroundColor: enabled ? '#06b6d4' : 'var(--color-bg-hover)',
-        border: `1px solid ${enabled ? '#06b6d4' : 'var(--color-border-default)'}`,
+        backgroundColor: enabled ? '#38bdf8' : 'var(--color-bg-hover)',
+        border: `1px solid ${enabled ? '#38bdf8' : 'var(--color-border-default)'}`,
       }}
     >
       <motion.div

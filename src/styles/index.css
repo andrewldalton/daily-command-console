@@ -6,44 +6,44 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap");
 
 /* ─────────────────────────────────────────────────────────
-   Carbon Edge — Design Tokens (Dark Default)
+   Dusk — Design Tokens (Dark Default)
    ───────────────────────────────────────────────────────── */
 :root {
   /* ── Color: Backgrounds ── */
-  --color-bg-root: #08090e;
-  --color-bg-base: #0c0f16;
-  --color-bg-surface: #12161f;
-  --color-bg-overlay: #181d28;
-  --color-bg-hover: #1e2430;
+  --color-bg-root: #181c28;
+  --color-bg-base: #1e2433;
+  --color-bg-surface: #252d3d;
+  --color-bg-overlay: #2c3548;
+  --color-bg-hover: #333d50;
 
   /* ── Color: Borders ── */
   --color-border-subtle: rgba(255, 255, 255, 0.06);
   --color-border-default: rgba(255, 255, 255, 0.10);
-  --color-border-strong: rgba(255, 255, 255, 0.16);
+  --color-border-strong: rgba(255, 255, 255, 0.18);
 
   /* ── Color: Text ── */
-  --color-text-primary: #f0f2f5;
-  --color-text-secondary: #8b95a5;
-  --color-text-tertiary: #505a6a;
-  --color-text-disabled: #353d4d;
+  --color-text-primary: #e2e8f0;
+  --color-text-secondary: #94a3b8;
+  --color-text-tertiary: #64748b;
+  --color-text-disabled: #475569;
 
-  /* ── Color: Accent (Electric Cyan-Mint) ── */
-  --color-accent: #06d6a0;
-  --color-accent-hover: #05c090;
-  --color-accent-muted: rgba(6, 214, 160, 0.12);
-  --color-accent-glow: rgba(6, 214, 160, 0.25);
+  /* ── Color: Accent (Sky Blue) ── */
+  --color-accent: #38bdf8;
+  --color-accent-hover: #0ea5e9;
+  --color-accent-muted: rgba(56, 189, 248, 0.12);
+  --color-accent-glow: rgba(56, 189, 248, 0.20);
 
   /* ── Color: Semantic ── */
-  --color-success: #10b981;
-  --color-success-muted: rgba(16, 185, 129, 0.12);
-  --color-warning: #f59e0b;
-  --color-warning-muted: rgba(245, 158, 11, 0.12);
-  --color-danger: #f43f5e;
-  --color-danger-muted: rgba(244, 63, 94, 0.12);
+  --color-success: #a3e635;
+  --color-success-muted: rgba(163, 230, 53, 0.12);
+  --color-warning: #fbbf24;
+  --color-warning-muted: rgba(251, 191, 36, 0.12);
+  --color-danger: #f472b6;
+  --color-danger-muted: rgba(244, 114, 182, 0.12);
 
   /* ── Color: Gold (Bible Verse) ── */
-  --color-gold: #c9a96e;
-  --color-gold-muted: rgba(201, 169, 110, 0.12);
+  --color-gold: #d4a94e;
+  --color-gold-muted: rgba(212, 169, 78, 0.12);
 
   /* ── Typography ── */
   --font-ui: "Inter", system-ui, -apple-system, sans-serif;
@@ -91,12 +91,12 @@
   --radius-xl: 20px;
   --radius-full: 9999px;
 
-  /* ── Shadows ── */
-  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.25);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
-  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
-  --shadow-glow: 0 0 20px rgba(6, 214, 160, 0.15);
+  /* ── Shadows (blue-tinted darkness) ── */
+  --shadow-xs: 0 1px 2px rgba(10, 14, 24, 0.3);
+  --shadow-sm: 0 2px 4px rgba(10, 14, 24, 0.25);
+  --shadow-md: 0 4px 12px rgba(10, 14, 24, 0.3);
+  --shadow-lg: 0 8px 24px rgba(10, 14, 24, 0.35);
+  --shadow-glow: 0 0 20px rgba(56, 189, 248, 0.15);
 
   /* ── Motion ── */
   --duration-fast: 150ms;
@@ -116,15 +116,15 @@
 }
 
 /* ─────────────────────────────────────────────────────────
-   Carbon Edge — Light Theme
+   Dusk — Light Theme
    ───────────────────────────────────────────────────────── */
 [data-theme="light"] {
   /* ── Backgrounds ── */
-  --color-bg-root: #f8f9fb;
-  --color-bg-base: #f0f2f5;
+  --color-bg-root: #f8f9fc;
+  --color-bg-base: #f0f2f7;
   --color-bg-surface: #ffffff;
-  --color-bg-overlay: #f5f6f8;
-  --color-bg-hover: #ebedf2;
+  --color-bg-overlay: #f5f6fa;
+  --color-bg-hover: #e8ebf2;
 
   /* ── Borders ── */
   --color-border-subtle: rgba(0, 0, 0, 0.06);
@@ -132,35 +132,35 @@
   --color-border-strong: rgba(0, 0, 0, 0.16);
 
   /* ── Text ── */
-  --color-text-primary: #0c0f16;
-  --color-text-secondary: #4a5568;
-  --color-text-tertiary: #8b95a5;
-  --color-text-disabled: #c0c8d4;
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #475569;
+  --color-text-tertiary: #94a3b8;
+  --color-text-disabled: #cbd5e1;
 
   /* ── Accent ── */
-  --color-accent: #059680;
-  --color-accent-hover: #048a75;
-  --color-accent-muted: rgba(5, 150, 128, 0.10);
-  --color-accent-glow: rgba(5, 150, 128, 0.15);
+  --color-accent: #0284c7;
+  --color-accent-hover: #0369a1;
+  --color-accent-muted: rgba(2, 132, 199, 0.10);
+  --color-accent-glow: rgba(2, 132, 199, 0.15);
 
   /* ── Semantic ── */
-  --color-success: #059669;
-  --color-success-muted: rgba(5, 150, 105, 0.10);
+  --color-success: #65a30d;
+  --color-success-muted: rgba(101, 163, 13, 0.10);
   --color-warning: #d97706;
   --color-warning-muted: rgba(217, 119, 6, 0.10);
-  --color-danger: #dc2626;
-  --color-danger-muted: rgba(220, 38, 38, 0.10);
+  --color-danger: #db2777;
+  --color-danger-muted: rgba(219, 39, 119, 0.10);
 
   /* ── Gold ── */
-  --color-gold: #8b6914;
-  --color-gold-muted: rgba(139, 105, 20, 0.10);
+  --color-gold: #92600a;
+  --color-gold-muted: rgba(146, 96, 10, 0.10);
 
   /* ── Shadows (lighter for light theme) ── */
   --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
   --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.10);
-  --shadow-glow: 0 0 12px rgba(5, 150, 128, 0.08);
+  --shadow-glow: 0 0 12px rgba(2, 132, 199, 0.08);
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -200,7 +200,7 @@ body::before {
   inset: 0;
   z-index: 1;
   pointer-events: none;
-  opacity: 0.015;
+  opacity: 0.012;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;
@@ -215,12 +215,12 @@ body::before {
    ───────────────────────────────────────────────────────── */
 ::selection {
   background-color: var(--color-accent);
-  color: #08090e;
+  color: #181c28;
 }
 
 ::-moz-selection {
   background-color: var(--color-accent);
-  color: #08090e;
+  color: #181c28;
 }
 
 /* ─────────────────────────────────────────────────────────
@@ -284,11 +284,13 @@ body::before {
   background: var(--color-bg-surface);
   border: 1px solid var(--color-border-default);
   border-radius: var(--radius-lg);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .surface:hover {
   border-color: var(--color-border-strong);
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.08);
+  transform: translateY(-1px);
 }
 
 .surface-interactive {
@@ -309,28 +311,28 @@ body::before {
    Glassmorphism Utilities
    ───────────────────────────────────────────────────────── */
 .glass {
-  background: rgba(12, 15, 22, 0.7);
+  background: rgba(30, 36, 51, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--color-border-subtle);
 }
 
 .glass-heavy {
-  background: rgba(8, 9, 14, 0.85);
+  background: rgba(24, 28, 40, 0.9);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--color-border-default);
 }
 
 [data-theme="light"] .glass {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--color-border-subtle);
 }
 
 [data-theme="light"] .glass-heavy {
-  background: rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--color-border-default);
@@ -368,12 +370,12 @@ body::before {
    ───────────────────────────────────────────────────────── */
 .accent-stripe {
   height: 2px;
-  background: linear-gradient(90deg, var(--color-accent), rgba(6, 214, 160, 0.3), transparent);
+  background: linear-gradient(90deg, #38bdf8, #a78bfa, #f472b6);
   border-radius: 1px;
 }
 
 [data-theme="light"] .accent-stripe {
-  background: linear-gradient(90deg, var(--color-accent), rgba(5, 150, 128, 0.3), transparent);
+  background: linear-gradient(90deg, #38bdf8, #a78bfa, #f472b6);
 }
 
 /* ─────────────────────────────────────────────────────────
