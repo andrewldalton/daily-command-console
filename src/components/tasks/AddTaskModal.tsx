@@ -85,7 +85,7 @@ export default function AddTaskModal({
     'w-full bg-[var(--color-bg-base)] border border-[var(--color-border-default)] rounded-[var(--radius-sm)] px-3 py-2 text-[var(--text-sm)] text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-accent)] focus:shadow-[var(--shadow-glow)] transition-all duration-150 appearance-none cursor-pointer';
 
   const inputClass =
-    'w-full bg-[var(--color-bg-base)] border border-[var(--color-border-default)] rounded-[var(--radius-sm)] px-3 py-2 text-[var(--text-sm)] text-[var(--color-text-primary)] placeholder:text-[var(--color-text-disabled)] focus:outline-none focus:border-[var(--color-accent)] focus:shadow-[var(--shadow-glow)] transition-all duration-150';
+    'w-full bg-[var(--color-bg-base)] border border-[var(--color-border-default)] rounded-[var(--radius-sm)] px-3 py-2 text-base text-[var(--color-text-primary)] placeholder:text-[var(--color-text-disabled)] focus:outline-none focus:border-[var(--color-accent)] focus:shadow-[var(--shadow-glow)] transition-all duration-150';
 
   return (
     <>

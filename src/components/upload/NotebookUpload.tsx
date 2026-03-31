@@ -7,16 +7,6 @@ import type { Task } from '../../types';
 
 type UploadState = 'idle' | 'preview' | 'processing' | 'review' | 'imported';
 
-const MOCK_OCR_LINES = [
-  '! Close Q1 revenue report',
-  '* Review PR for auth service',
-  '* Update API documentation',
-  '- Schedule dentist appointment',
-  '- Pick up dry cleaning',
-  '? Follow up with design team on wireframes',
-  '? Check status of vendor contract',
-];
-
 function parseLine(line: string): {
   title: string;
   category: Task['category'];
@@ -46,33 +36,73 @@ export default function NotebookUpload() {
     Array<{ title: string; category: Task['category'] }>
   >([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const timeoutIds = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const abortRef = useRef<AbortController | null>(null);
+  const previewTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { importTasks } = useTaskStore();
   const today = useDayStore((s) => s.today);
 
   useEffect(() => {
     return () => {
-      timeoutIds.current.forEach(clearTimeout);
+      abortRef.current?.abort();
+      if (previewTimerRef.current) clearTimeout(previewTimerRef.current);
     };
   }, []);
 
   const handleFile = useCallback((file: File) => {
     if (!file.type.startsWith('image/')) return;
     const reader = new FileReader();
-    reader.onload = (e) => {
-      setImageUrl(e.target?.result as string);
+    reader.onload = async (e) => {
+      const dataUrl = e.target?.result as string;
+      setImageUrl(dataUrl);
       setState('preview');
-      const t1 = setTimeout(() => {
+
+      // Brief preview before processing
+      previewTimerRef.current = setTimeout(async () => {
         setState('processing');
-        const t2 = setTimeout(() => {
-          const mockText = MOCK_OCR_LINES.join('\n');
-          setOcrText(mockText);
-          setParsedTasks(MOCK_OCR_LINES.map(parseLine).filter((t) => t.title.length > 0));
+
+        // Cancel any in-flight request
+        abortRef.current?.abort();
+        const controller = new AbortController();
+        abortRef.current = controller;
+
+        try {
+          const res = await fetch('/api/ocr', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ image: dataUrl }),
+            signal: controller.signal,
+          });
+
+          const data = await res.json() as {
+            rawText?: string;
+            tasks?: Array<{ title: string; category: string; priority: string }>;
+            error?: string;
+          };
+
+          if (!res.ok || data.error) {
+            // API failed — fall back to empty editable textarea
+            setOcrText('');
+            setParsedTasks([]);
+            setState('review');
+            return;
+          }
+
+          setOcrText(data.rawText || '');
+          setParsedTasks(
+            (data.tasks || []).map((t) => ({
+              title: t.title,
+              category: t.category as Task['category'],
+            }))
+          );
           setState('review');
-        }, 2000);
-        timeoutIds.current.push(t2);
+        } catch (err: any) {
+          if (err?.name === 'AbortError') return;
+          // Network error or local dev — fall back to empty editable textarea
+          setOcrText('');
+          setParsedTasks([]);
+          setState('review');
+        }
       }, 600);
-      timeoutIds.current.push(t1);
     };
     reader.readAsDataURL(file);
   }, []);

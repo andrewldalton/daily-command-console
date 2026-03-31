@@ -123,14 +123,17 @@ function CategorySection({ config }: { config: CategoryConfig }) {
                   value={quickAddValue}
                   onChange={(e) => setQuickAddValue(e.target.value)}
                   onKeyDown={(e) => {
-                    if (e.key === 'Enter') handleQuickAdd();
+                    if (e.key === 'Enter') {
+                      inputRef.current?.blur();
+                      handleQuickAdd();
+                    }
                     if (e.key === 'Escape') {
                       setQuickAddOpen(false);
                       setQuickAddValue('');
                     }
                   }}
                   placeholder="Type a task and press Enter..."
-                  className="flex-1 bg-transparent border-b border-white/10 px-1 py-1.5 text-[13px] text-white/80 placeholder:text-white/20 focus:outline-none focus:border-[#06d6a0]/40 transition-colors duration-150"
+                  className="flex-1 bg-transparent border-b border-white/10 px-1 py-1.5 text-base text-white/80 placeholder:text-white/20 focus:outline-none focus:border-[#06d6a0]/40 transition-colors duration-150"
                 />
                 <button
                   onClick={() => {
