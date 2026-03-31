@@ -186,6 +186,13 @@ body {
   position: relative;
 }
 
+/* ── iOS zoom prevention: all inputs must be >= 16px ── */
+@supports (-webkit-touch-callout: none) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
+
 /* ── Theme Transitions ── */
 body,
 .surface,
