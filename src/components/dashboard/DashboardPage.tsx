@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import TodayHero from './TodayHero';
 import MomentumPanel from './MomentumPanel';
+import ProspectsPipeline from './ProspectsPipeline';
 import WinsFeed from './WinsFeed';
 import TaskBoard from '../tasks/TaskBoard';
 import NotebookUpload from '../upload/NotebookUpload';
@@ -28,6 +29,7 @@ export default function DashboardPage() {
 
         <aside className="flex flex-col gap-4 order-2 lg:order-2">
           <MomentumPanel />
+          <ProspectsPipeline />
           <WinsFeed />
         </aside>
       </div>

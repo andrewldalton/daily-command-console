@@ -4,6 +4,7 @@ import { useTaskStore } from './store/taskStore';
 import { useDayStore } from './store/dayStore';
 import { useUIStore } from './store/uiStore';
 import { useDailyInfoStore } from './store/dailyInfoStore';
+import { useProspectStore } from './store/prospectStore';
 import LoginScreen from './components/auth/LoginScreen';
 import AppShell from './components/layout/AppShell';
 import DashboardPage from './components/dashboard/DashboardPage';
@@ -56,6 +57,7 @@ export default function App() {
   const loadHistory = useDayStore((s) => s.loadHistory);
   const loadTasks = useTaskStore((s) => s.loadTasks);
   const loadDailyInfo = useDailyInfoStore((s) => s.loadDailyInfo);
+  const initProspects = useProspectStore((s) => s.initProspects);
 
   // Check auth on mount
   useEffect(() => {
@@ -80,8 +82,9 @@ export default function App() {
       loadTasks();
       loadHistory();
       loadDailyInfo();
+      initProspects();
     }
-  }, [authenticated, initializeToday, loadTasks, loadHistory, loadDailyInfo]);
+  }, [authenticated, initializeToday, loadTasks, loadHistory, loadDailyInfo, initProspects]);
 
   if (authLoading) {
     return <LoadingScreen />;

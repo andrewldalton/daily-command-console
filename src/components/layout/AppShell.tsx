@@ -2,7 +2,6 @@ import type { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { Sun, Moon, LayoutDashboard, History, Settings } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
-import NewsTicker from './NewsTicker';
 import type { TabId } from '../../types';
 
 const navItems: { id: TabId; label: string; icon: typeof LayoutDashboard }[] = [
@@ -91,11 +90,6 @@ export default function AppShell({ children }: { children: ReactNode }) {
               );
             })}
           </nav>
-        </div>
-
-        {/* Center: News Ticker (hidden on very small screens) */}
-        <div className="hidden min-[480px]:flex flex-1 min-w-0 mx-3">
-          <NewsTicker />
         </div>
 
         {/* Right: Date + Theme Toggle */}
