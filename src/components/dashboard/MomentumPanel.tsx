@@ -91,16 +91,16 @@ function DayHealthBadge({ total }: { total: number }) {
   let Icon: typeof Sun;
   let pulse = false;
 
-  if (total < 5) {
+  if (total < 8) {
     label = 'Light';
     color = '#38bdf8';
     Icon = Sun;
-  } else if (total <= 12) {
+  } else if (total <= 30) {
     label = 'Normal';
     color = '#a3e635';
     Icon = Zap;
   } else {
-    label = 'Overloaded';
+    label = 'Heavy';
     color = '#f472b6';
     Icon = AlertTriangle;
     pulse = true;

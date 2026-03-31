@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import type { Task } from '../types';
 import { useDayStore } from './dayStore';
+import { api } from '../lib/api';
 
 interface TaskState {
   tasks: Task[];
@@ -24,21 +25,31 @@ const getTodayDateString = (): string => {
   return new Date().toISOString().split('T')[0];
 };
 
-const persistTasks = (tasks: Task[]) => {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
-  } catch {
-    // Storage full or unavailable
-  }
+// localStorage as fast cache
+const persistLocal = (tasks: Task[]) => {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); } catch {}
 };
-
-const loadTasksFromStorage = (): Task[] => {
+const loadLocal = (): Task[] => {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
     return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
+  } catch { return []; }
+};
+
+// Fire-and-forget API sync (don't block UI)
+const syncToApi = {
+  create: (task: Task) => {
+    api.createTask(task).catch(() => {});
+  },
+  update: (id: string, updates: Partial<Task>) => {
+    api.updateTask(id, updates).catch(() => {});
+  },
+  delete: (id: string) => {
+    api.deleteTask(id).catch(() => {});
+  },
+  bulkImport: (tasks: Array<{ title: string; category?: string; priority?: string }>, dayId: string) => {
+    api.importTasks(tasks, dayId).catch(() => {});
+  },
 };
 
 export const useTaskStore = create<TaskState>((set, get) => ({
@@ -58,9 +69,10 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     };
     set((state) => {
       const tasks = [...state.tasks, newTask];
-      persistTasks(tasks);
+      persistLocal(tasks);
       return { tasks };
     });
+    syncToApi.create(newTask);
     useDayStore.getState().updateScore();
   },
 
@@ -71,50 +83,51 @@ export const useTaskStore = create<TaskState>((set, get) => ({
           ? { ...task, ...updates, updatedAt: new Date().toISOString() }
           : task
       );
-      persistTasks(tasks);
+      persistLocal(tasks);
       return { tasks };
     });
+    syncToApi.update(id, updates);
   },
 
   deleteTask: (id) => {
     set((state) => {
       const tasks = state.tasks.filter((task) => task.id !== id);
-      persistTasks(tasks);
+      persistLocal(tasks);
       return { tasks };
     });
+    syncToApi.delete(id);
     useDayStore.getState().updateScore();
   },
 
   completeTask: (id) => {
+    const now = new Date().toISOString();
     set((state) => {
-      const now = new Date().toISOString();
       const tasks = state.tasks.map((task) =>
         task.id === id
           ? { ...task, status: 'completed' as const, completedAt: now, updatedAt: now }
           : task
       );
-      persistTasks(tasks);
+      persistLocal(tasks);
       return { tasks };
     });
+    syncToApi.update(id, { status: 'completed', completedAt: now });
     useDayStore.getState().updateScore();
   },
 
   deferTask: (id) => {
+    const now = new Date().toISOString();
+    const task = get().tasks.find((t) => t.id === id);
+    const newCount = (task?.deferredCount ?? 0) + 1;
     set((state) => {
-      const now = new Date().toISOString();
-      const tasks = state.tasks.map((task) =>
-        task.id === id
-          ? {
-              ...task,
-              status: 'deferred' as const,
-              deferredCount: task.deferredCount + 1,
-              updatedAt: now,
-            }
-          : task
+      const tasks = state.tasks.map((t) =>
+        t.id === id
+          ? { ...t, status: 'deferred' as const, deferredCount: newCount, updatedAt: now }
+          : t
       );
-      persistTasks(tasks);
+      persistLocal(tasks);
       return { tasks };
     });
+    syncToApi.update(id, { status: 'deferred', deferredCount: newCount });
     useDayStore.getState().updateScore();
   },
 
@@ -130,7 +143,7 @@ export const useTaskStore = create<TaskState>((set, get) => ({
       const tasks = state.tasks.map((task) =>
         reorderedMap.has(task.id) ? reorderedMap.get(task.id)! : task
       );
-      persistTasks(tasks);
+      persistLocal(tasks);
       return { tasks };
     });
   },
@@ -153,27 +166,63 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     }));
     set((state) => {
       const tasks = [...state.tasks, ...newTasks];
-      persistTasks(tasks);
+      persistLocal(tasks);
       return { tasks };
     });
+    // Sync each to API
+    newTasks.forEach((t) => syncToApi.create(t));
     useDayStore.getState().updateScore();
   },
 
-  loadTasks: () => {
+  loadTasks: async () => {
     set({ loading: true });
-    const tasks = loadTasksFromStorage();
-    set({ tasks, loading: false });
 
-    // Auto carry-forward: check if this is a new day
-    const todayDate = getTodayDateString();
-    const lastDate = localStorage.getItem(LAST_DATE_KEY);
-
-    if (lastDate && lastDate !== todayDate) {
-      // New day detected — carry forward incomplete tasks once
-      get().carryForwardTasks();
+    // Load from localStorage first (instant)
+    const localTasks = loadLocal();
+    if (localTasks.length > 0) {
+      set({ tasks: localTasks, loading: false });
     }
 
-    // Always update the stored date
+    // Then fetch from API (source of truth) and merge
+    try {
+      const apiTasks = await api.getTasks();
+      if (Array.isArray(apiTasks) && apiTasks.length > 0) {
+        // Convert DB snake_case to camelCase
+        const normalized: Task[] = apiTasks.map((t: any) => ({
+          id: t.id,
+          dayId: t.day_id || t.dayId || '',
+          title: t.title || '',
+          category: t.category || 'work',
+          priority: t.priority || 'medium',
+          status: t.status || 'pending',
+          source: t.source || 'manual',
+          estimatedMinutes: t.estimated_minutes || t.estimatedMinutes,
+          dueTime: t.due_time || t.dueTime,
+          notes: t.notes,
+          deferredCount: t.deferred_count ?? t.deferredCount ?? 0,
+          sortOrder: t.sort_order ?? t.sortOrder ?? 0,
+          completedAt: t.completed_at || t.completedAt,
+          createdAt: t.created_at || t.createdAt || new Date().toISOString(),
+          updatedAt: t.updated_at || t.updatedAt || new Date().toISOString(),
+        }));
+        set({ tasks: normalized, loading: false });
+        persistLocal(normalized);
+      } else if (localTasks.length > 0) {
+        // API is empty but we have local tasks — push them up
+        localTasks.forEach((t) => syncToApi.create(t));
+      }
+    } catch {
+      // API unavailable — use local cache (already set above)
+    }
+
+    set({ loading: false });
+
+    // Auto carry-forward on new day
+    const todayDate = getTodayDateString();
+    const lastDate = localStorage.getItem(LAST_DATE_KEY);
+    if (lastDate && lastDate !== todayDate) {
+      get().carryForwardTasks();
+    }
     localStorage.setItem(LAST_DATE_KEY, todayDate);
   },
 
@@ -182,8 +231,6 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     if (!today) return;
 
     const allTasks = get().tasks;
-
-    // Find incomplete tasks from previous days (not today's dayId)
     const incompletePreviousTasks = allTasks.filter(
       (t) =>
         t.dayId !== today.id &&
@@ -212,22 +259,24 @@ export const useTaskStore = create<TaskState>((set, get) => ({
       updatedAt: now,
     }));
 
-    // Mark original tasks as deferred so they don't get carried again
     const updatedOriginals = allTasks.map((task) => {
       const isCarried = incompletePreviousTasks.some((t) => t.id === task.id);
       if (isCarried) {
-        return {
-          ...task,
-          status: 'deferred' as const,
-          updatedAt: now,
-        };
+        return { ...task, status: 'deferred' as const, updatedAt: now };
       }
       return task;
     });
 
     const finalTasks = [...updatedOriginals, ...carriedTasks];
     set({ tasks: finalTasks });
-    persistTasks(finalTasks);
+    persistLocal(finalTasks);
+
+    // Sync carried tasks to API
+    carriedTasks.forEach((t) => syncToApi.create(t));
+    incompletePreviousTasks.forEach((t) =>
+      syncToApi.update(t.id, { status: 'deferred' })
+    );
+
     useDayStore.getState().updateScore();
   },
 
