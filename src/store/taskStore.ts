@@ -300,6 +300,13 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     if (!today) return;
 
     const allTasks = get().tasks;
+
+    // Check if carry-forward already happened (tasks with source=carryover already exist for today)
+    const alreadyCarried = allTasks.some(
+      (t) => t.dayId === today.id && t.source === 'carryover'
+    );
+    if (alreadyCarried) return;
+
     const incompletePreviousTasks = allTasks.filter(
       (t) =>
         t.dayId !== today.id &&
@@ -311,7 +318,16 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     const now = new Date().toISOString();
     const currentLength = allTasks.length;
 
-    const carriedTasks: Task[] = incompletePreviousTasks.map((task, index) => ({
+    // Deduplicate by title — only carry each unique title once
+    const seenTitles = new Set<string>();
+    const uniqueIncompleteTasks = incompletePreviousTasks.filter((t) => {
+      const key = t.title.toLowerCase().trim();
+      if (seenTitles.has(key)) return false;
+      seenTitles.add(key);
+      return true;
+    });
+
+    const carriedTasks: Task[] = uniqueIncompleteTasks.map((task, index) => ({
       id: crypto.randomUUID(),
       dayId: today.id,
       title: task.title,
