@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useDailyInfoStore } from '../../store/dailyInfoStore';
 import { useTaskStore } from '../../store/taskStore';
+import { useDayStore } from '../../store/dayStore';
 import { Cloud, Droplets, Wind, BookOpen } from 'lucide-react';
+import { use3DTilt } from '../../hooks/use3DTilt';
 
 function getGreeting(): string {
   const hour = new Date().getHours();
@@ -43,7 +45,11 @@ const item = {
 export default function TodayHero() {
   const { weather, bibleVerse, nationalDay, quote } = useDailyInfoStore();
   const tasks = useTaskStore((s) => s.tasks);
+  const today = useDayStore((s) => s.today);
   const [now, setNow] = useState(new Date());
+  const tilt1 = use3DTilt({ maxRotation: 4 });
+  const tilt2 = use3DTilt({ maxRotation: 4 });
+  const tilt3 = use3DTilt({ maxRotation: 4 });
 
   // Live clock -- updates every minute
   useEffect(() => {
@@ -51,12 +57,13 @@ export default function TodayHero() {
     return () => clearInterval(interval);
   }, []);
 
-  const total = tasks.length;
-  const completed = tasks.filter((t) => t.status === 'completed').length;
-  const mustWinLeft = tasks.filter(
+  const todayTasks = today ? tasks.filter((t) => t.dayId === today.id) : [];
+  const total = todayTasks.length;
+  const completed = todayTasks.filter((t) => t.status === 'completed').length;
+  const mustWinLeft = todayTasks.filter(
     (t) => t.category === 'must-win' && t.status !== 'completed'
   ).length;
-  const carriedOver = tasks.filter((t) => t.source === 'carryover' && t.status !== 'completed').length;
+  const carriedOver = todayTasks.filter((t) => t.source === 'carryover' && t.status !== 'completed').length;
 
   return (
     <motion.section
@@ -118,6 +125,7 @@ export default function TodayHero() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
         {/* ═══ Weather Card ═══ */}
         {weather && (
+          <div ref={tilt1.ref} onMouseMove={tilt1.onMouseMove} onMouseLeave={tilt1.onMouseLeave} style={tilt1.style}>
           <motion.div
             variants={item}
             className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col gap-3 transition-all duration-300 group"
@@ -145,6 +153,9 @@ export default function TodayHero() {
                 background: 'radial-gradient(circle, rgba(56,189,248,0.08) 0%, transparent 70%)',
               }}
             />
+
+            {/* 3D tilt spotlight */}
+            <div className="absolute inset-0 pointer-events-none" style={tilt1.spotlightStyle} />
 
             <div className="flex items-start justify-between">
               <div className="flex flex-col gap-1">
@@ -224,10 +235,12 @@ export default function TodayHero() {
               </div>
             )}
           </motion.div>
+          </div>
         )}
 
         {/* ═══ Bible Verse Card ═══ */}
         {bibleVerse && (
+          <div ref={tilt2.ref} onMouseMove={tilt2.onMouseMove} onMouseLeave={tilt2.onMouseLeave} style={tilt2.style}>
           <motion.div
             variants={item}
             className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col gap-3 transition-all duration-300 group"
@@ -255,6 +268,9 @@ export default function TodayHero() {
                 background: 'radial-gradient(circle, rgba(56,189,248,0.08) 0%, transparent 70%)',
               }}
             />
+
+            {/* 3D tilt spotlight */}
+            <div className="absolute inset-0 pointer-events-none" style={tilt2.spotlightStyle} />
 
             <div className="flex items-center gap-2">
               <BookOpen size={14} style={{ color: '#d4a94e' }} />
@@ -304,9 +320,11 @@ export default function TodayHero() {
               </p>
             )}
           </motion.div>
+          </div>
         )}
 
         {/* ═══ Task Stats + Quote Card ═══ */}
+        <div ref={tilt3.ref} onMouseMove={tilt3.onMouseMove} onMouseLeave={tilt3.onMouseLeave} style={tilt3.style}>
         <motion.div
           variants={item}
           className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col justify-between gap-4 transition-all duration-300 group"
@@ -334,6 +352,9 @@ export default function TodayHero() {
               background: 'radial-gradient(circle, rgba(56,189,248,0.08) 0%, transparent 70%)',
             }}
           />
+
+          {/* 3D tilt spotlight */}
+          <div className="absolute inset-0 pointer-events-none" style={tilt3.spotlightStyle} />
 
           {/* Task Stats */}
           <div>
@@ -436,6 +457,7 @@ export default function TodayHero() {
             </div>
           )}
         </motion.div>
+        </div>
       </div>
     </motion.section>
   );

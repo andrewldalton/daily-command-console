@@ -2,12 +2,13 @@ import { useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Target, Check, X } from 'lucide-react';
 import { useProspectStore } from '../../store/prospectStore';
+import { getTodayDateCT } from '../../lib/utils';
 
 export default function ProspectsPipeline() {
   const { active, researched, markResearched, dismissProspect } = useProspectStore();
 
   const todayCount = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = getTodayDateCT();
     return researched.filter((p) => p.addedAt.slice(0, 10) === today).length;
   }, [researched]);
 

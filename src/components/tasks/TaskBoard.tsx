@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, ChevronDown, ChevronRight } from 'lucide-react';
 import { useTaskStore } from '../../store/taskStore';
@@ -6,6 +6,8 @@ import { useDayStore } from '../../store/dayStore';
 import type { Task } from '../../types';
 import TaskCard from './TaskCard';
 import AddTaskModal from './AddTaskModal';
+import GhostTaskBanner from './GhostTaskBanner';
+import GhostTaskModal from './GhostTaskModal';
 
 interface CategoryConfig {
   key: Task['category'];
@@ -15,27 +17,10 @@ interface CategoryConfig {
 }
 
 const CATEGORIES: CategoryConfig[] = [
-  {
-    key: 'must-win',
-    label: 'Big 3',
-    color: '#38bdf8',
-    maxPending: 3,
-  },
-  {
-    key: 'work',
-    label: 'Daily Blitz',
-    color: '#38bdf8',
-  },
-  {
-    key: 'personal',
-    label: 'Personal',
-    color: '#38bdf8',
-  },
-  {
-    key: 'follow-up',
-    label: 'Follow-Up',
-    color: '#38bdf8',
-  },
+  { key: 'must-win', label: 'Big 3', color: '#f472b6', maxPending: 3 },
+  { key: 'work', label: 'Daily Blitz', color: '#38bdf8' },
+  { key: 'personal', label: 'Personal', color: '#a78bfa' },
+  { key: 'follow-up', label: 'Follow-Up', color: '#fbbf24' },
 ];
 
 function CategorySection({ config }: { config: CategoryConfig }) {
@@ -49,7 +34,7 @@ function CategorySection({ config }: { config: CategoryConfig }) {
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const categoryTasks = tasks.filter((t) => t.category === config.key);
+  const categoryTasks = tasks.filter((t) => t.category === config.key && today && t.dayId === today.id);
   const pendingTasks = categoryTasks.filter((t) => t.status !== 'completed');
   const completedTasks = categoryTasks.filter((t) => t.status === 'completed');
   const atMaxPending = config.maxPending != null && pendingTasks.length >= config.maxPending;
@@ -251,11 +236,67 @@ function CategorySection({ config }: { config: CategoryConfig }) {
 }
 
 export default function TaskBoard() {
+  const tasks = useTaskStore((s) => s.tasks);
+  const today = useDayStore((s) => s.today);
+  const { commitGhostTask, killGhostTask, delegateGhostTask } = useTaskStore();
+  const [ghostModalTask, setGhostModalTask] = useState<Task | null>(null);
+
+  const ghostTasks = useMemo(() => {
+    if (!today) return [];
+    return tasks.filter(
+      (t) => t.dayId === today.id && t.deferredCount >= 5 && t.status !== 'completed'
+    );
+  }, [tasks, today]);
+
+  const handleResolveGhosts = () => {
+    if (ghostTasks.length > 0) {
+      setGhostModalTask(ghostTasks[0]);
+    }
+  };
+
+  const handleGhostCommit = (id: string) => {
+    commitGhostTask(id);
+    // Move to next ghost task or close
+    const remaining = ghostTasks.filter((t) => t.id !== id);
+    setGhostModalTask(remaining.length > 0 ? remaining[0] : null);
+  };
+
+  const handleGhostKill = (id: string) => {
+    killGhostTask(id);
+    const remaining = ghostTasks.filter((t) => t.id !== id);
+    setGhostModalTask(remaining.length > 0 ? remaining[0] : null);
+  };
+
+  const handleGhostDelegate = (id: string, delegateTo: string) => {
+    delegateGhostTask(id, delegateTo);
+    const remaining = ghostTasks.filter((t) => t.id !== id);
+    setGhostModalTask(remaining.length > 0 ? remaining[0] : null);
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {CATEGORIES.map((cat) => (
-        <CategorySection key={cat.key} config={cat} />
-      ))}
+    <div className="flex flex-col gap-4">
+      {/* Ghost Task Banner */}
+      <GhostTaskBanner ghostCount={ghostTasks.length} onResolve={handleResolveGhosts} />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {CATEGORIES.map((cat) => (
+          <CategorySection key={cat.key} config={cat} />
+        ))}
+      </div>
+
+      {/* Ghost Task Decision Modal */}
+      <AnimatePresence>
+        {ghostModalTask && (
+          <GhostTaskModal
+            key={ghostModalTask.id}
+            task={ghostModalTask}
+            onCommit={handleGhostCommit}
+            onDelegate={handleGhostDelegate}
+            onKill={handleGhostKill}
+            onClose={() => setGhostModalTask(null)}
+          />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

@@ -1,7 +1,12 @@
 import { create } from 'zustand';
 import type { Task } from '../types';
 import { useDayStore } from './dayStore';
+import { useXpStore } from './xpStore';
 import { api } from '../lib/api';
+import { getTodayDateCT } from '../lib/utils';
+import { showXPToast } from '../components/ui/XPToast';
+import { triggerBig3Celebration } from '../components/ui/Big3Celebration';
+import { checkBig3Complete } from './xpStore';
 
 interface TaskState {
   tasks: Task[];
@@ -11,6 +16,9 @@ interface TaskState {
   deleteTask: (id: string) => void;
   completeTask: (id: string) => void;
   deferTask: (id: string) => void;
+  commitGhostTask: (id: string) => void;
+  killGhostTask: (id: string) => void;
+  delegateGhostTask: (id: string, delegateTo: string) => void;
   reorderTasks: (tasks: Task[]) => void;
   importTasks: (ocrTasks: Array<{ title: string; category?: Task['category']; priority?: Task['priority'] }>, dayId: string) => void;
   loadTasks: () => void;
@@ -22,7 +30,7 @@ const STORAGE_KEY = 'dcc_tasks';
 const LAST_DATE_KEY = 'dcc_last_date';
 
 const getTodayDateString = (): string => {
-  return new Date().toISOString().split('T')[0];
+  return getTodayDateCT();
 };
 
 // localStorage as fast cache
@@ -101,17 +109,40 @@ export const useTaskStore = create<TaskState>((set, get) => ({
 
   completeTask: (id) => {
     const now = new Date().toISOString();
+    const task = get().tasks.find((t) => t.id === id);
     set((state) => {
-      const tasks = state.tasks.map((task) =>
-        task.id === id
-          ? { ...task, status: 'completed' as const, completedAt: now, updatedAt: now }
-          : task
+      const tasks = state.tasks.map((t) =>
+        t.id === id
+          ? { ...t, status: 'completed' as const, completedAt: now, updatedAt: now }
+          : t
       );
       persistLocal(tasks);
       return { tasks };
     });
     syncToApi.update(id, { status: 'completed', completedAt: now });
     useDayStore.getState().updateScore();
+
+    // Award XP for completing the task
+    if (task) {
+      const allTasks = get().tasks; // already updated
+      useXpStore.getState().awardXP(task.category, task.dayId, allTasks);
+
+      // Show XP toast
+      const xpStore = useXpStore.getState();
+      const baseXp = { 'must-win': 50, work: 30, personal: 20, 'follow-up': 25 }[task.category] ?? 0;
+      const multiplier = xpStore.getMultiplier(task.dayId);
+      showXPToast({
+        xp: Math.round(baseXp * multiplier),
+        color: { 'must-win': '#f472b6', work: '#38bdf8', personal: '#a78bfa', 'follow-up': '#fbbf24' }[task.category],
+        multiplier: multiplier > 1 ? multiplier : undefined,
+      });
+
+      // Check if Big 3 just completed
+      if (task.category === 'must-win' && checkBig3Complete(allTasks, task.dayId)) {
+        triggerBig3Celebration();
+        showXPToast({ xp: 0, label: 'Big 3 Complete — 2× XP Activated', color: '#fbbf24' });
+      }
+    }
   },
 
   deferTask: (id) => {
@@ -128,6 +159,49 @@ export const useTaskStore = create<TaskState>((set, get) => ({
       return { tasks };
     });
     syncToApi.update(id, { status: 'deferred', deferredCount: newCount });
+    useDayStore.getState().updateScore();
+  },
+
+  commitGhostTask: (id) => {
+    // Pin to must-win category, reset deferred count
+    const now = new Date().toISOString();
+    set((state) => {
+      const tasks = state.tasks.map((t) =>
+        t.id === id
+          ? { ...t, category: 'must-win' as const, deferredCount: 0, status: 'pending' as const, priority: 'high' as const, updatedAt: now }
+          : t
+      );
+      persistLocal(tasks);
+      return { tasks };
+    });
+    syncToApi.update(id, { category: 'must-win', deferredCount: 0, status: 'pending', priority: 'high' });
+  },
+
+  killGhostTask: (id) => {
+    // Remove the task entirely (send to graveyard)
+    set((state) => {
+      const tasks = state.tasks.filter((t) => t.id !== id);
+      persistLocal(tasks);
+      return { tasks };
+    });
+    syncToApi.delete(id);
+    useDayStore.getState().updateScore();
+    useXpStore.getState().penalizeGhostTask();
+  },
+
+  delegateGhostTask: (id, delegateTo) => {
+    // Mark as completed with delegation note
+    const now = new Date().toISOString();
+    set((state) => {
+      const tasks = state.tasks.map((t) =>
+        t.id === id
+          ? { ...t, status: 'completed' as const, completedAt: now, notes: `Delegated to ${delegateTo}`, updatedAt: now }
+          : t
+      );
+      persistLocal(tasks);
+      return { tasks };
+    });
+    syncToApi.update(id, { status: 'completed', completedAt: now, notes: `Delegated to ${delegateTo}` });
     useDayStore.getState().updateScore();
   },
 

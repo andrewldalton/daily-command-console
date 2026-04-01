@@ -1,12 +1,14 @@
 import { create } from 'zustand';
 import type { DayEntry } from '../types';
 import { useTaskStore } from './taskStore';
+import { api } from '../lib/api';
+import { getTodayDateCT } from '../lib/utils';
 
 interface DayState {
   today: DayEntry | null;
   history: DayEntry[];
   loading: boolean;
-  initializeToday: () => void;
+  initializeToday: () => Promise<void>;
   saveDay: (day: DayEntry) => void;
   loadHistory: () => void;
   getDayByDate: (date: string) => DayEntry | undefined;
@@ -16,7 +18,7 @@ interface DayState {
 const STORAGE_KEY = 'dcc_days';
 
 const getTodayDateString = (): string => {
-  return new Date().toISOString().split('T')[0];
+  return getTodayDateCT();
 };
 
 const persistDays = (days: DayEntry[]) => {
@@ -41,12 +43,36 @@ export const useDayStore = create<DayState>((set, get) => ({
   history: [],
   loading: false,
 
-  initializeToday: () => {
+  initializeToday: async () => {
     set({ loading: true });
     const days = loadDaysFromStorage();
     const todayDate = getTodayDateString();
-    let todayEntry = days.find((d) => d.date === todayDate);
 
+    // Try to get today's day entry from the API (source of truth for the ID)
+    let todayEntry: DayEntry | null = null;
+    try {
+      const apiDay = await api.getToday();
+      if (apiDay && apiDay.id) {
+        todayEntry = {
+          id: apiDay.id,
+          date: apiDay.date || todayDate,
+          tasks: [],
+          score: apiDay.score ?? 0,
+          totalTasks: apiDay.total_tasks ?? apiDay.totalTasks ?? 0,
+          completedTasks: apiDay.completed_tasks ?? apiDay.completedTasks ?? 0,
+          createdAt: apiDay.created_at || apiDay.createdAt || new Date().toISOString(),
+        };
+      }
+    } catch {
+      // API unavailable — fall back to local
+    }
+
+    // Fall back to local storage if API didn't work
+    if (!todayEntry) {
+      todayEntry = days.find((d) => d.date === todayDate) ?? null;
+    }
+
+    // Last resort: create a new entry locally
     if (!todayEntry) {
       todayEntry = {
         id: crypto.randomUUID(),
@@ -57,9 +83,16 @@ export const useDayStore = create<DayState>((set, get) => ({
         completedTasks: 0,
         createdAt: new Date().toISOString(),
       };
-      days.push(todayEntry);
-      persistDays(days);
     }
+
+    // Update local storage with the correct ID
+    const existingIdx = days.findIndex((d) => d.date === todayDate);
+    if (existingIdx >= 0) {
+      days[existingIdx] = { ...days[existingIdx], ...todayEntry };
+    } else {
+      days.push(todayEntry);
+    }
+    persistDays(days);
 
     set({
       today: todayEntry,
@@ -123,6 +156,16 @@ export const useDayStore = create<DayState>((set, get) => ({
         d.id === updatedToday.id ? updatedToday : d
       );
       persistDays(history);
+
+      // Also sync score to API
+      api.saveDay({
+        id: updatedToday.id,
+        date: updatedToday.date,
+        score: updatedToday.score,
+        totalTasks: updatedToday.totalTasks,
+        completedTasks: updatedToday.completedTasks,
+        createdAt: updatedToday.createdAt,
+      }).catch(() => {});
 
       return { today: updatedToday, history };
     });

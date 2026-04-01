@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle2 } from 'lucide-react';
 import { useTaskStore } from '../../store/taskStore';
+import { useDayStore } from '../../store/dayStore';
 
 function timeAgo(isoString: string): string {
   const diff = Date.now() - new Date(isoString).getTime();
@@ -15,9 +16,10 @@ function timeAgo(isoString: string): string {
 
 export default function WinsFeed() {
   const tasks = useTaskStore((s) => s.tasks);
+  const today = useDayStore((s) => s.today);
 
   const wins = tasks
-    .filter((t) => t.status === 'completed' && t.completedAt)
+    .filter((t) => t.status === 'completed' && t.completedAt && today && t.dayId === today.id)
     .sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime());
 
   return (

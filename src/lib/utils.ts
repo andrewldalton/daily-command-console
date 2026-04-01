@@ -1,5 +1,16 @@
 import type { Task } from '../types';
 
+/**
+ * Returns today's date string in YYYY-MM-DD format using the America/Chicago
+ * timezone.  This MUST match the backend (functions/api/days/today.ts) which
+ * also uses America/Chicago so that the frontend and D1 agree on which day
+ * "today" is.  Using UTC (toISOString) would cause a mismatch for several
+ * hours around midnight.
+ */
+export function getTodayDateCT(): string {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
+}
+
 export function getDayOfYear(date: Date): number {
   const start = new Date(date.getFullYear(), 0, 0);
   const diff = date.getTime() - start.getTime();

@@ -3,7 +3,7 @@ interface Env {
 }
 
 export const onRequestGet: PagesFunction<Env> = async ({ env }) => {
-  const today = new Date().toISOString().split('T')[0];
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Chicago' });
   let day = await env.DB.prepare('SELECT * FROM days WHERE date = ?').bind(today).first();
 
   if (!day) {

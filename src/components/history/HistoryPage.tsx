@@ -66,7 +66,7 @@ function DayCard({
     day: 'numeric',
   });
 
-  const completed = day.tasks.filter((t) => t.status === 'completed').length;
+  const completed = day.completedTasks ?? day.tasks.filter((t) => t.status === 'completed').length;
   const deferred = day.tasks.filter((t) => t.status === 'deferred').length;
 
   return (

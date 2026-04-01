@@ -9,8 +9,10 @@ import {
   ChevronRight,
   Check,
   RotateCcw,
+  Skull,
 } from 'lucide-react';
 import type { Task } from '../../types';
+import { useSwipeActions, SwipeRevealLayer } from '../../hooks/useSwipeActions';
 
 const CATEGORY_COLORS: Record<Task['category'], string> = {
   'must-win': '#f472b6',
@@ -58,7 +60,15 @@ export default function TaskCard({
   const isCompleted = task.status === 'completed';
   const isDeferred = task.status === 'deferred';
   const repeatedlyDeferred = task.deferredCount > 2;
+  const isGhost = task.deferredCount >= 5;
+  const isDecaying = task.deferredCount >= 4;
   const categoryColor = CATEGORY_COLORS[task.category];
+
+  const { containerRef, dragProps, revealState } = useSwipeActions({
+    onSwipeRight: () => onComplete(task.id),
+    onSwipeLeft: () => onDefer(task.id),
+    enabled: !isCompleted,
+  });
 
   const handleComplete = (id: string) => {
     if (!isCompleted) {
@@ -69,23 +79,39 @@ export default function TaskCard({
   };
 
   return (
-    <motion.div
-      layout
-      initial={{ opacity: 0, y: 8 }}
-      animate={{
-        opacity: isCompleted ? 0.5 : 1,
-        y: 0,
-        scale: isCompleted ? 0.98 : 1,
-        boxShadow: justCompleted
-          ? '0 0 20px rgba(56, 189, 248, 0.3), 0 0 40px rgba(56, 189, 248, 0.1)'
-          : '0 0 0px rgba(56, 189, 248, 0)',
-      }}
-      exit={{ opacity: 0, scale: 0.95, y: -4 }}
-      transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
-      className={`group relative rounded-lg bg-[#252d3d] border border-white/[0.06] transition-all duration-150 hover:border-white/[0.12] ${
-        repeatedlyDeferred ? 'ring-1 ring-amber-500/30 shadow-[0_0_12px_rgba(251,191,36,0.1)]' : ''
-      }`}
-    >
+    <div ref={containerRef} className="relative overflow-hidden rounded-lg">
+      <SwipeRevealLayer direction="right" active={revealState === 'complete'} />
+      <SwipeRevealLayer direction="left" active={revealState === 'defer'} />
+      <motion.div
+        {...dragProps}
+        layout
+        initial={{ opacity: 0, y: 8 }}
+        animate={{
+          ...dragProps.animate,
+          opacity: isCompleted ? 0.5 : 1,
+          y: 0,
+          scale: isCompleted ? 0.98 : 1,
+          boxShadow: justCompleted
+            ? '0 0 20px rgba(56, 189, 248, 0.3), 0 0 40px rgba(56, 189, 248, 0.1)'
+            : '0 0 0px rgba(56, 189, 248, 0)',
+        }}
+        exit={{ opacity: 0, scale: 0.95, y: -4 }}
+        whileTap={{ scale: 0.98 }}
+        transition={{ ...dragProps.transition, duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
+        className={`group relative rounded-lg bg-[#252d3d] border border-white/[0.06] transition-all duration-150 hover:border-white/[0.12] ${
+          isGhost
+            ? 'ring-1 ring-red-500/40 shadow-[0_0_16px_rgba(244,114,182,0.15)]'
+            : isDecaying
+              ? 'ring-1 ring-red-400/25 shadow-[0_0_12px_rgba(239,68,68,0.1)]'
+              : repeatedlyDeferred
+                ? 'ring-1 ring-amber-500/30 shadow-[0_0_12px_rgba(251,191,36,0.1)]'
+                : ''
+        }`}
+        style={{
+          borderLeft: `3px solid ${categoryColor}`,
+          ...(isGhost ? { opacity: 0.6, filter: 'saturate(0.6)' } : {}),
+        }}
+      >
       <div className="flex items-start gap-3 px-3 py-2.5">
         {/* Custom Checkbox */}
         <button
@@ -97,9 +123,10 @@ export default function TaskCard({
             whileTap={{ scale: 0.85 }}
             className={`w-[18px] h-[18px] rounded-full border flex items-center justify-center transition-colors duration-150 ${
               isCompleted
-                ? 'bg-[#38bdf8] border-[#38bdf8]'
+                ? 'border-transparent'
                 : 'border-white/20 hover:border-[#38bdf8]/60'
             }`}
+            style={isCompleted ? { backgroundColor: categoryColor, borderColor: categoryColor } : undefined}
           >
             {isCompleted && (
               <motion.div
@@ -138,12 +165,16 @@ export default function TaskCard({
               {task.title}
             </span>
 
-            {/* Deferred warning */}
-            {repeatedlyDeferred && (
+            {/* Ghost/Deferred warning */}
+            {isGhost ? (
+              <span title={`Ghost task — deferred ${task.deferredCount} times`}>
+                <Skull className="w-3.5 h-3.5 text-[#f472b6] flex-shrink-0 animate-pulse" />
+              </span>
+            ) : repeatedlyDeferred ? (
               <span title={`Deferred ${task.deferredCount} times`}>
                 <AlertTriangle className="w-3.5 h-3.5 text-[#fbbf24] flex-shrink-0" />
               </span>
-            )}
+            ) : null}
           </div>
 
           {/* Meta row */}
@@ -245,5 +276,6 @@ export default function TaskCard({
         </div>
       </div>
     </motion.div>
+    </div>
   );
 }

@@ -2,6 +2,9 @@ import { motion } from 'framer-motion';
 import { Sun, Zap, AlertTriangle } from 'lucide-react';
 import { useTaskStore } from '../../store/taskStore';
 import { useDayStore } from '../../store/dayStore';
+import AnimatedBorder from '../ui/AnimatedBorder';
+import { AnimatedNumber } from '../ui/AnimatedNumber';
+import { getTodayDateCT } from '../../lib/utils';
 
 function ProgressRing({
   percentage,
@@ -59,7 +62,7 @@ function ProgressRing({
           className="font-mono text-3xl font-bold text-[#e2e8f0]"
           style={{ textShadow: '0 0 20px rgba(56, 189, 248, 0.4)' }}
         >
-          {percentage}%
+          <AnimatedNumber value={percentage} className="inline" />%
         </span>
         <span className="text-[10px] font-medium uppercase tracking-widest text-[#64748b] mt-0.5">
           Execution Score
@@ -72,12 +75,7 @@ function ProgressRing({
 function StatCell({ value, label, color }: { value: number; label: string; color?: string }) {
   return (
     <div className="flex flex-col items-center gap-1 bg-white/[0.04] border border-white/[0.07] rounded-lg p-3">
-      <span
-        className="font-mono text-xl font-bold"
-        style={{ color: color ?? '#e2e8f0' }}
-      >
-        {value}
-      </span>
+      <AnimatedNumber value={value} className="font-mono text-xl font-bold" style={{ color: color ?? '#e2e8f0' }} />
       <span className="text-[9px] font-medium uppercase tracking-wider text-[#64748b]">
         {label}
       </span>
@@ -126,7 +124,9 @@ function DayHealthBadge({ total }: { total: number }) {
 const DAY_LETTERS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
 function WeekBars({ history }: { history: { score: number; date: string }[] }) {
-  const today = new Date();
+  // Use Central Time date to stay consistent with backend day boundaries
+  const todayStr = getTodayDateCT();
+  const today = new Date(todayStr + 'T12:00:00'); // noon avoids DST edge cases
   const days: { score: number }[] = [];
 
   for (let i = 6; i >= 0; i--) {
@@ -185,17 +185,25 @@ function WeekBars({ history }: { history: { score: number; date: string }[] }) {
 
 export default function MomentumPanel() {
   const tasks = useTaskStore((s) => s.tasks);
+  const today = useDayStore((s) => s.today);
   const history = useDayStore((s) => s.history);
 
-  const total = tasks.length;
-  const completed = tasks.filter((t) => t.status === 'completed').length;
-  const deferred = tasks.filter((t) => t.status === 'deferred').length;
+  const todayTasks = today ? tasks.filter((t) => t.dayId === today.id) : [];
+  const total = todayTasks.length;
+  const completed = todayTasks.filter((t) => t.status === 'completed').length;
+  const deferred = todayTasks.filter((t) => t.status === 'deferred').length;
   const remaining = total - completed - deferred;
   const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
 
   return (
+    <AnimatedBorder
+      active={percentage >= 80}
+      speed={percentage >= 90 ? (percentage === 100 ? 3 : 2) : 1}
+      golden={percentage === 100}
+      borderRadius={8}
+    >
     <motion.div
-      className="bg-[#252d3d]/60 border border-white/[0.06] rounded-lg p-6 flex flex-col items-center gap-6"
+      className={`bg-[#252d3d]/60 rounded-lg p-6 flex flex-col items-center gap-6 ${percentage >= 80 ? '' : 'border border-white/[0.06]'}`}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut', delay: 0.15 }}
@@ -220,5 +228,6 @@ export default function MomentumPanel() {
       {/* 7-Day Trend */}
       <WeekBars history={history} />
     </motion.div>
+    </AnimatedBorder>
   );
 }
