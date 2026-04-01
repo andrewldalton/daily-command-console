@@ -45,6 +45,14 @@ export interface WeatherData {
   high: number;
   low: number;
   location: string;
+  daily: Array<{
+    day: string;       // e.g. "Tue", "Wed"
+    date: string;      // e.g. "4/1"
+    high: number;
+    low: number;
+    condition: string;
+    icon: string;
+  }>;
 }
 
 export interface Quote {

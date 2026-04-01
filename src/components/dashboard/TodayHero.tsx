@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { useDailyInfoStore } from '../../store/dailyInfoStore';
 import { useTaskStore } from '../../store/taskStore';
 import { useDayStore } from '../../store/dayStore';
-import { Cloud, Droplets, Wind, BookOpen } from 'lucide-react';
+import { Cloud, Droplets, Wind, BookOpen, Sun, CloudRain, CloudLightning } from 'lucide-react';
 import { use3DTilt } from '../../hooks/use3DTilt';
 
 function getGreeting(): string {
@@ -200,16 +200,19 @@ export default function TodayHero() {
               </span>
             </div>
 
-            {/* Hourly forecast pills */}
+            {/* Next 4 hours */}
             {weather.hourly.length > 0 && (
               <div
-                className="flex flex-nowrap gap-1.5 mt-1 pt-3 overflow-x-auto"
+                className="flex flex-nowrap gap-1.5 mt-1 pt-3"
                 style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}
               >
-                {weather.hourly.slice(0, 6).map((h, i) => (
+                <span className="text-[8px] font-semibold uppercase tracking-wider self-center mr-1" style={{ color: '#475569' }}>
+                  Next
+                </span>
+                {weather.hourly.slice(0, 4).map((h, i) => (
                   <div
                     key={i}
-                    className="flex flex-col items-center rounded-lg px-2 py-1.5 min-w-[44px]"
+                    className="flex flex-col items-center rounded-lg px-2 py-1.5 flex-1 min-w-0"
                     style={{
                       backgroundColor: 'rgba(255,255,255,0.04)',
                       border: '1px solid rgba(255,255,255,0.06)',
@@ -232,6 +235,40 @@ export default function TodayHero() {
                     </span>
                   </div>
                 ))}
+              </div>
+            )}
+
+            {/* 3-Day Forecast */}
+            {weather.daily && weather.daily.length > 0 && (
+              <div
+                className="flex flex-nowrap gap-1.5 mt-1.5"
+              >
+                {weather.daily.map((d, i) => {
+                  const DayIcon = d.icon === 'storm' ? CloudLightning : d.icon === 'cloud' ? CloudRain : Sun;
+                  return (
+                    <div
+                      key={i}
+                      className="flex items-center gap-2 rounded-lg px-2.5 py-1.5 flex-1 min-w-0"
+                      style={{
+                        backgroundColor: 'rgba(255,255,255,0.03)',
+                        border: '1px solid rgba(255,255,255,0.05)',
+                      }}
+                    >
+                      <DayIcon size={12} style={{ color: d.icon === 'storm' ? '#fbbf24' : d.icon === 'cloud' ? '#94a3b8' : '#fbbf24', flexShrink: 0 }} />
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[8px] font-semibold uppercase tracking-wider" style={{ color: '#64748b' }}>
+                          {d.day}
+                        </span>
+                        <span
+                          className="text-[10px] tabular-nums font-medium"
+                          style={{ fontFamily: "'JetBrains Mono', monospace", color: '#94a3b8' }}
+                        >
+                          {d.high}&deg;/{d.low}&deg;
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </motion.div>
