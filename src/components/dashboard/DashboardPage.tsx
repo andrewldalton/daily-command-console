@@ -21,22 +21,22 @@ export default function DashboardPage() {
         <XPBar />
       </div>
 
-      {/* ── Main Grid: Tasks (7 cols) + Sidebar (5 cols) — 58/42 split ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5">
+      {/* ── Main Grid: Tasks + Sidebar ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-5 items-start">
+        {/* Tasks (8 cols on desktop) */}
+        <div className="min-w-0 lg:col-span-8 order-2 lg:order-1">
+          <TaskBoard />
+        </div>
+
         {/* Sidebar widgets (above tasks on mobile, right column on desktop) */}
-        <aside className="lg:col-span-5 flex flex-col gap-4 order-1 lg:order-2">
+        <aside className="lg:col-span-4 flex flex-col gap-4 order-1 lg:order-2">
           <MomentumPanel />
-          {/* ProspectsPipeline stays in sidebar on desktop only */}
+          <WinsFeed />
+          {/* ProspectsPipeline in sidebar on desktop only */}
           <div className="hidden lg:block">
             <ProspectsPipeline />
           </div>
-          <WinsFeed />
         </aside>
-
-        {/* Tasks (7 cols on desktop) */}
-        <div className="min-w-0 lg:col-span-7 order-2 lg:order-1">
-          <TaskBoard />
-        </div>
 
         {/* Prospect Pipeline — below tasks on mobile only */}
         <div className="lg:hidden order-3">

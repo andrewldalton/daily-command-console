@@ -14,7 +14,7 @@ export default function ProspectsPipeline() {
 
   return (
     <div
-      className="rounded-xl p-4"
+      className="rounded-lg p-4"
       style={{
         backgroundColor: 'rgba(37,45,61,0.6)',
         border: '1px solid rgba(255,255,255,0.06)',

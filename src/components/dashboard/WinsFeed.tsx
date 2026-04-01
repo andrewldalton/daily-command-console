@@ -24,13 +24,13 @@ export default function WinsFeed() {
 
   return (
     <motion.div
-      className="bg-[#252d3d]/60 border border-white/[0.06] rounded-lg p-5"
+      className="bg-[#252d3d]/60 border border-white/[0.06] rounded-lg p-4"
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut', delay: 0.25 }}
     >
       {/* Header */}
-      <div className="flex items-center gap-2 mb-4">
+      <div className="flex items-center gap-2 mb-3">
         <h3 className="text-[11px] font-semibold uppercase tracking-widest text-[#94a3b8]">
           Your Wins
         </h3>

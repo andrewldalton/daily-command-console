@@ -70,7 +70,7 @@ export default function TodayHero() {
       variants={container}
       initial="hidden"
       animate="show"
-      className="mb-10"
+      className="mb-6"
     >
       {/* ── Greeting + Time ── */}
       <div className="flex items-baseline justify-between flex-wrap gap-2 mb-1">
@@ -122,13 +122,13 @@ export default function TodayHero() {
       </motion.div>
 
       {/* ── Info Cards Row (equal height) ── */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 items-stretch">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* ═══ Weather Card ═══ */}
         {weather && (
-          <div ref={tilt1.ref} onMouseMove={tilt1.onMouseMove} onMouseLeave={tilt1.onMouseLeave} style={tilt1.style}>
+          <div ref={tilt1.ref} onMouseMove={tilt1.onMouseMove} onMouseLeave={tilt1.onMouseLeave} style={tilt1.style} className="h-full">
           <motion.div
             variants={item}
-            className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col gap-3 transition-all duration-300 group"
+            className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col gap-3 transition-all duration-300 group h-full"
             style={{
               backgroundColor: '#252d3d',
               border: '1px solid rgba(255,255,255,0.08)',
@@ -277,10 +277,10 @@ export default function TodayHero() {
 
         {/* ═══ Bible Verse Card ═══ */}
         {bibleVerse && (
-          <div ref={tilt2.ref} onMouseMove={tilt2.onMouseMove} onMouseLeave={tilt2.onMouseLeave} style={tilt2.style}>
+          <div ref={tilt2.ref} onMouseMove={tilt2.onMouseMove} onMouseLeave={tilt2.onMouseLeave} style={tilt2.style} className="h-full">
           <motion.div
             variants={item}
-            className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col gap-3 transition-all duration-300 group"
+            className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col gap-3 transition-all duration-300 group h-full"
             style={{
               backgroundColor: '#252d3d',
               border: '1px solid rgba(255,255,255,0.08)',
@@ -361,10 +361,10 @@ export default function TodayHero() {
         )}
 
         {/* ═══ Task Stats + Quote Card ═══ */}
-        <div ref={tilt3.ref} onMouseMove={tilt3.onMouseMove} onMouseLeave={tilt3.onMouseLeave} style={tilt3.style}>
+        <div ref={tilt3.ref} onMouseMove={tilt3.onMouseMove} onMouseLeave={tilt3.onMouseLeave} style={tilt3.style} className="h-full">
         <motion.div
           variants={item}
-          className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col justify-between gap-4 transition-all duration-300 group"
+          className="relative overflow-hidden rounded-xl p-4 sm:p-5 flex flex-col justify-between gap-4 transition-all duration-300 group h-full"
           style={{
             backgroundColor: '#252d3d',
             border: '1px solid rgba(255,255,255,0.08)',

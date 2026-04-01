@@ -59,14 +59,16 @@ function ProgressRing({
       </svg>
       <div className="absolute inset-0 flex flex-col items-center justify-center">
         <span
-          className="font-mono text-3xl font-bold text-[#e2e8f0]"
+          className={`font-mono font-bold text-[#e2e8f0] ${size <= 110 ? 'text-xl' : 'text-3xl'}`}
           style={{ textShadow: '0 0 20px rgba(56, 189, 248, 0.4)' }}
         >
           <AnimatedNumber value={percentage} className="inline" />%
         </span>
-        <span className="text-[10px] font-medium uppercase tracking-widest text-[#64748b] mt-0.5">
-          Execution Score
-        </span>
+        {size > 110 && (
+          <span className="text-[10px] font-medium uppercase tracking-widest text-[#64748b] mt-0.5">
+            Score
+          </span>
+        )}
       </div>
     </div>
   );
@@ -74,9 +76,9 @@ function ProgressRing({
 
 function StatCell({ value, label, color }: { value: number; label: string; color?: string }) {
   return (
-    <div className="flex flex-col items-center gap-1 bg-white/[0.04] border border-white/[0.07] rounded-lg p-3">
-      <AnimatedNumber value={value} className="font-mono text-xl font-bold" style={{ color: color ?? '#e2e8f0' }} />
-      <span className="text-[9px] font-medium uppercase tracking-wider text-[#64748b]">
+    <div className="flex flex-col items-center gap-0.5 bg-white/[0.04] border border-white/[0.07] rounded-lg py-2 px-2">
+      <AnimatedNumber value={value} className="font-mono text-lg font-bold" style={{ color: color ?? '#e2e8f0' }} />
+      <span className="text-[8px] font-medium uppercase tracking-wider text-[#64748b]">
         {label}
       </span>
     </div>
@@ -143,13 +145,13 @@ function WeekBars({ history }: { history: { score: number; date: string }[] }) {
   const startDow = startDate.getDay(); // 0=Sun
 
   return (
-    <div className="w-full flex flex-col items-center gap-1.5">
-      <span className="text-[10px] font-medium uppercase tracking-wider text-[#64748b]">
+    <div className="flex flex-col items-center gap-1">
+      <span className="text-[9px] font-medium uppercase tracking-wider text-[#64748b]">
         7-Day Trend
       </span>
-      <div className="flex items-end gap-2 justify-center h-8">
+      <div className="flex items-end gap-1.5 justify-center h-6">
         {days.map((day, i) => {
-          const height = Math.max(4, (day.score / 100) * 28);
+          const height = Math.max(3, (day.score / 100) * 22);
           const isToday = i === 6;
           const opacity = isToday ? 1 : day.score > 0 ? 0.4 + (day.score / 100) * 0.4 : 0.1;
           return (
@@ -167,7 +169,7 @@ function WeekBars({ history }: { history: { score: number; date: string }[] }) {
           );
         })}
       </div>
-      <div className="flex gap-2 justify-center">
+      <div className="flex gap-1.5 justify-center">
         {days.map((_, i) => {
           const dow = (startDow + i) % 7;
           // Convert JS day (0=Sun) to label index (0=Mon)
@@ -203,30 +205,27 @@ export default function MomentumPanel() {
       borderRadius={8}
     >
     <motion.div
-      className={`bg-[#252d3d]/60 rounded-lg p-6 flex flex-col items-center gap-6 ${percentage >= 80 ? '' : 'border border-white/[0.06]'}`}
+      className={`bg-[#252d3d]/60 rounded-lg p-5 flex flex-col gap-4 ${percentage >= 80 ? '' : 'border border-white/[0.06]'}`}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, ease: 'easeOut', delay: 0.15 }}
     >
-      {/* Progress Ring */}
-      <ProgressRing percentage={percentage} />
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full">
-        <StatCell value={total} label="Total" />
-        <StatCell value={completed} label="Done" color="#38bdf8" />
-        <StatCell value={remaining} label="Left" />
-        <StatCell value={deferred} label="Defer" color="#fbbf24" />
+      {/* Ring + Stats side by side */}
+      <div className="flex items-center gap-5">
+        <ProgressRing percentage={percentage} size={100} strokeWidth={8} />
+        <div className="flex-1 grid grid-cols-2 gap-2">
+          <StatCell value={total} label="Total" />
+          <StatCell value={completed} label="Done" color="#38bdf8" />
+          <StatCell value={remaining} label="Left" />
+          <StatCell value={deferred} label="Defer" color="#fbbf24" />
+        </div>
       </div>
 
-      {/* Divider */}
-      <div className="w-full h-px bg-white/[0.06]" />
-
-      {/* Day Health */}
-      <DayHealthBadge total={total} />
-
-      {/* 7-Day Trend */}
-      <WeekBars history={history} />
+      {/* Divider + Day Health + 7-Day Trend */}
+      <div className="flex items-center justify-between pt-3 border-t border-white/[0.06]">
+        <DayHealthBadge total={total} />
+        <WeekBars history={history} />
+      </div>
     </motion.div>
     </AnimatedBorder>
   );
