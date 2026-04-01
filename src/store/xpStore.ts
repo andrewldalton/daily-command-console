@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import type { Task } from '../types';
+import { api } from '../lib/api';
 
 /* ── Rank definitions ── */
 export interface Rank {
@@ -79,6 +80,7 @@ interface XpState {
   /** Tracks which dayIds had Big 3 multiplier applied */
   big3Days: string[];
 
+  initializeXp: () => Promise<void>;
   awardXP: (category: Task['category'], dayId: string, tasks?: Task[]) => void;
   checkStreak: (completionPercentage: number, date: string) => void;
   penalizeGhostTask: () => void;
@@ -100,22 +102,22 @@ function loadState(): Partial<XpState> {
 }
 
 function persistState(state: XpState) {
+  const data = {
+    totalXp: state.totalXp,
+    currentRank: state.currentRank,
+    currentStreak: state.currentStreak,
+    bestStreak: state.bestStreak,
+    levelUp: state.levelUp,
+    xpHistory: state.xpHistory,
+    big3Days: state.big3Days,
+  };
   try {
-    localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        totalXp: state.totalXp,
-        currentRank: state.currentRank,
-        currentStreak: state.currentStreak,
-        bestStreak: state.bestStreak,
-        levelUp: state.levelUp,
-        xpHistory: state.xpHistory,
-        big3Days: state.big3Days,
-      })
-    );
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
   } catch {
     // storage unavailable
   }
+  // Sync to D1 in background
+  api.saveXp(data).catch(() => {});
 }
 
 const saved = loadState();
@@ -128,6 +130,45 @@ export const useXpStore = create<XpState>((set, get) => ({
   levelUp: saved.levelUp ?? { pending: false, newRank: null },
   xpHistory: saved.xpHistory ?? [],
   big3Days: (saved as any).big3Days ?? [],
+
+  initializeXp: async () => {
+    try {
+      const remote = await api.getXp();
+      if (remote && typeof remote.totalXp === 'number') {
+        const local = loadState();
+        const localXp = local.totalXp ?? 0;
+        // Use whichever has more XP (higher = more recent progress)
+        if (remote.totalXp >= localXp) {
+          const rank = getRankForXp(remote.totalXp);
+          const merged = {
+            totalXp: remote.totalXp,
+            currentRank: rank.name,
+            currentStreak: remote.currentStreak ?? 0,
+            bestStreak: Math.max(remote.bestStreak ?? 0, local.bestStreak ?? 0),
+            xpHistory: remote.xpHistory ?? [],
+            big3Days: remote.big3Days ?? [],
+            levelUp: { pending: false, newRank: null },
+          };
+          try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+          } catch { /* */ }
+          set(merged);
+        } else {
+          // Local is ahead — push to server
+          api.saveXp({
+            totalXp: localXp,
+            currentRank: local.currentRank,
+            currentStreak: local.currentStreak,
+            bestStreak: local.bestStreak,
+            big3Days: (local as any).big3Days ?? [],
+            xpHistory: local.xpHistory ?? [],
+          }).catch(() => {});
+        }
+      }
+    } catch {
+      // API unavailable, local state is fine
+    }
+  },
 
   awardXP: (category, dayId, tasks) => {
     set((state) => {

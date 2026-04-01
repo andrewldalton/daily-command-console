@@ -66,4 +66,12 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(day),
     }),
+
+  // XP
+  getXp: () => request<any>('/xp'),
+  saveXp: (xpData: any) =>
+    request<{ ok: boolean }>('/xp', {
+      method: 'PUT',
+      body: JSON.stringify(xpData),
+    }),
 };

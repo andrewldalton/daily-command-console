@@ -5,6 +5,7 @@ import { useDayStore } from './store/dayStore';
 import { useUIStore } from './store/uiStore';
 import { useDailyInfoStore } from './store/dailyInfoStore';
 import { useProspectStore } from './store/prospectStore';
+import { useXpStore } from './store/xpStore';
 import LoginScreen from './components/auth/LoginScreen';
 import AppShell from './components/layout/AppShell';
 import DashboardPage from './components/dashboard/DashboardPage';
@@ -27,6 +28,7 @@ export default function App() {
   const loadTasks = useTaskStore((s) => s.loadTasks);
   const loadDailyInfo = useDailyInfoStore((s) => s.loadDailyInfo);
   const initProspects = useProspectStore((s) => s.initProspects);
+  const initializeXp = useXpStore((s) => s.initializeXp);
   const [storesReady, setStoresReady] = useState(false);
   const tasks = useTaskStore((s) => s.tasks);
   const todayForPulse = useDayStore((s) => s.today);
@@ -64,6 +66,7 @@ export default function App() {
         loadHistory();
         loadDailyInfo();
         initProspects();
+        initializeXp();
         // Small delay to let stores populate before rendering UI
         setTimeout(() => setStoresReady(true), 80);
       };
@@ -71,7 +74,7 @@ export default function App() {
     } else {
       setStoresReady(false);
     }
-  }, [authenticated, initializeToday, loadTasks, loadHistory, loadDailyInfo, initProspects]);
+  }, [authenticated, initializeToday, loadTasks, loadHistory, loadDailyInfo, initProspects, initializeXp]);
 
   // Auth loading or stores initializing — show nothing (just bg color)
   if (authLoading) {
