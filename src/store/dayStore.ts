@@ -120,8 +120,29 @@ export const useDayStore = create<DayState>((set, get) => ({
     });
   },
 
-  loadHistory: () => {
+  loadHistory: async () => {
     set({ loading: true });
+    try {
+      const data = await api.sync();
+      if (data.history && data.history.length > 0) {
+        const days: DayEntry[] = data.history.map((d: any) => ({
+          id: d.id,
+          date: d.date,
+          tasks: [],
+          score: d.score ?? 0,
+          totalTasks: d.total_tasks ?? d.totalTasks ?? 0,
+          completedTasks: d.completed_tasks ?? d.completedTasks ?? 0,
+          createdAt: d.created_at || d.createdAt || '',
+        }));
+        persistDays(days);
+        const todayDate = getTodayDateString();
+        const todayEntry = days.find((d) => d.date === todayDate) ?? null;
+        set({ history: days, today: todayEntry ?? get().today, loading: false });
+        return;
+      }
+    } catch {
+      // API unavailable — fall back to local
+    }
     const days = loadDaysFromStorage();
     const todayDate = getTodayDateString();
     const todayEntry = days.find((d) => d.date === todayDate) ?? null;

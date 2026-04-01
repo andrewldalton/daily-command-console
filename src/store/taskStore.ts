@@ -251,16 +251,10 @@ export const useTaskStore = create<TaskState>((set, get) => ({
   loadTasks: async () => {
     set({ loading: true });
 
-    // Load from localStorage first (instant)
-    const localTasks = loadLocal();
-    if (localTasks.length > 0) {
-      set({ tasks: localTasks, loading: false });
-    }
-
-    // Then fetch from API (source of truth) and merge
+    // Try API first (source of truth)
     try {
       const apiTasks = await api.getTasks();
-      if (Array.isArray(apiTasks) && apiTasks.length > 0) {
+      if (Array.isArray(apiTasks)) {
         // Convert DB snake_case to camelCase
         const normalized: Task[] = apiTasks.map((t: any) => ({
           id: t.id,
@@ -281,12 +275,13 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         }));
         set({ tasks: normalized, loading: false });
         persistLocal(normalized);
-      } else if (localTasks.length > 0) {
-        // API is empty but we have local tasks — push them up
-        localTasks.forEach((t) => syncToApi.create(t));
       }
     } catch {
-      // API unavailable — use local cache (already set above)
+      // API unavailable — fall back to localStorage cache
+      const localTasks = loadLocal();
+      if (localTasks.length > 0) {
+        set({ tasks: localTasks, loading: false });
+      }
     }
 
     set({ loading: false });

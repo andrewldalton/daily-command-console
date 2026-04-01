@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Cloud, Flame, Medal, Zap, RotateCcw, Ghost, BarChart3 } from 'lucide-react';
 import { useTaskStore } from '../../store/taskStore';
@@ -73,7 +73,7 @@ function IntelRow({ icon, label, value, sublabel, index }: IntelRowProps) {
 export default function MorningBriefing() {
   const todayDate = getTodayDateString();
 
-  const shouldShow = useMemo(() => {
+  const [visible, setVisible] = useState(() => {
     const hour = new Date().getHours();
     if (hour >= 12) return false;
     try {
@@ -81,9 +81,21 @@ export default function MorningBriefing() {
     } catch {
       return false;
     }
-  }, [todayDate]);
+  });
 
-  const [visible, setVisible] = useState(shouldShow);
+  // Check server-side dismissal (covers cross-device)
+  useEffect(() => {
+    if (!visible) return;
+    fetch('/api/briefing', { credentials: 'include' })
+      .then((r) => r.json())
+      .then((data: any) => {
+        if (data.dismissed) {
+          try { localStorage.setItem(getStorageKey(todayDate), 'true'); } catch {}
+          setVisible(false);
+        }
+      })
+      .catch(() => {});
+  }, [visible, todayDate]);
 
   const tasks = useTaskStore((s) => s.tasks);
   const today = useDayStore((s) => s.today);
@@ -114,9 +126,9 @@ export default function MorningBriefing() {
   const handleDismiss = () => {
     try {
       localStorage.setItem(getStorageKey(todayDate), 'true');
-    } catch {
-      // Storage unavailable
-    }
+    } catch {}
+    // Sync dismissal to server so other devices know
+    fetch('/api/briefing', { method: 'POST', credentials: 'include' }).catch(() => {});
     setVisible(false);
   };
 
