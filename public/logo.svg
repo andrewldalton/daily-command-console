@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e2433"/>
+      <stop offset="100%" stop-color="#141821"/>
+    </linearGradient>
+    <linearGradient id="bolt" x1="0.3" y1="0" x2="0.7" y2="1">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0ea5e9"/>
+    </linearGradient>
+    <linearGradient id="d-fill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#e2e8f0"/>
+      <stop offset="100%" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="bolt-glow">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background rounded square -->
+  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+
+  <!-- Subtle border -->
+  <rect x="2" y="2" width="508" height="508" rx="106" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3"/>
+
+  <!-- Accent line at top -->
+  <rect x="80" y="0" width="352" height="3" rx="1.5" fill="url(#bolt)" opacity="0.6"/>
+
+  <!-- Letter D - bold monospace style -->
+  <g filter="url(#glow)">
+    <!-- D vertical stroke -->
+    <rect x="128" y="110" width="52" height="292" rx="6" fill="url(#d-fill)"/>
+    <!-- D curve - thick arc -->
+    <path d="M 154 110
+             C 154 110, 380 110, 380 256
+             C 380 402, 154 402, 154 402"
+          fill="none" stroke="url(#d-fill)" stroke-width="52" stroke-linecap="round"/>
+  </g>
+
+  <!-- Lightning bolt cutting through diagonally -->
+  <g filter="url(#bolt-glow)">
+    <polygon points="310,80 220,270 290,270 200,432 340,230 270,230 340,80" fill="url(#bolt)"/>
+  </g>
+
+  <!-- Small lightning reflection/shine -->
+  <polygon points="310,80 220,270 290,270 200,432 340,230 270,230 340,80" fill="white" opacity="0.15"/>
+</svg>
