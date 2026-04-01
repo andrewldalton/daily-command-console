@@ -13,14 +13,14 @@
       <stop offset="100%" stop-color="#cbd5e1"/>
     </linearGradient>
     <filter id="glow">
-      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feGaussianBlur stdDeviation="6" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
       </feMerge>
     </filter>
     <filter id="bolt-glow">
-      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feGaussianBlur stdDeviation="10" result="blur"/>
       <feMerge>
         <feMergeNode in="blur"/>
         <feMergeNode in="SourceGraphic"/>
@@ -28,31 +28,25 @@
     </filter>
   </defs>
 
-  <!-- Background rounded square -->
-  <rect width="512" height="512" rx="108" fill="url(#bg)"/>
+  <!-- Full bleed background - iOS adds its own rounded corners -->
+  <rect width="512" height="512" fill="url(#bg)"/>
 
-  <!-- Subtle border -->
-  <rect x="2" y="2" width="508" height="508" rx="106" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="3"/>
-
-  <!-- Accent line at top -->
-  <rect x="80" y="0" width="352" height="3" rx="1.5" fill="url(#bolt)" opacity="0.6"/>
-
-  <!-- Letter D - bold monospace style -->
+  <!-- Letter D - scaled up to fill the icon -->
   <g filter="url(#glow)">
     <!-- D vertical stroke -->
-    <rect x="128" y="110" width="52" height="292" rx="6" fill="url(#d-fill)"/>
+    <rect x="88" y="60" width="62" height="392" rx="6" fill="url(#d-fill)"/>
     <!-- D curve - thick arc -->
-    <path d="M 154 110
-             C 154 110, 380 110, 380 256
-             C 380 402, 154 402, 154 402"
-          fill="none" stroke="url(#d-fill)" stroke-width="52" stroke-linecap="round"/>
+    <path d="M 119 60
+             C 119 60, 420 60, 420 256
+             C 420 452, 119 452, 119 452"
+          fill="none" stroke="url(#d-fill)" stroke-width="62" stroke-linecap="round"/>
   </g>
 
-  <!-- Lightning bolt cutting through diagonally -->
+  <!-- Lightning bolt cutting through diagonally - scaled up -->
   <g filter="url(#bolt-glow)">
-    <polygon points="310,80 220,270 290,270 200,432 340,230 270,230 340,80" fill="url(#bolt)"/>
+    <polygon points="340,40 230,250 310,250 200,472 370,210 290,210 370,40" fill="url(#bolt)"/>
   </g>
 
-  <!-- Small lightning reflection/shine -->
-  <polygon points="310,80 220,270 290,270 200,432 340,230 270,230 340,80" fill="white" opacity="0.15"/>
+  <!-- Lightning reflection/shine -->
+  <polygon points="340,40 230,250 310,250 200,472 370,210 290,210 370,40" fill="white" opacity="0.12"/>
 </svg>
