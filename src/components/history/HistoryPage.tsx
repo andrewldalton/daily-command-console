@@ -160,9 +160,16 @@ export default function HistoryPage() {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
 
-  // Sort newest first, and filter
+  // Deduplicate by date (keep the entry with highest score), sort newest first, and filter
   const filteredDays = useMemo(() => {
-    let days = [...history].sort(
+    const byDate = new Map<string, DayEntry>();
+    for (const day of history) {
+      const existing = byDate.get(day.date);
+      if (!existing || day.score > existing.score || day.totalTasks > existing.totalTasks) {
+        byDate.set(day.date, day);
+      }
+    }
+    let days = [...byDate.values()].sort(
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
 
