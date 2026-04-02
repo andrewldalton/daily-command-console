@@ -307,10 +307,36 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     );
     if (alreadyCarried) return;
 
+    // Find the most recent previous day (yesterday), not all history
+    const previousDayIds = [...new Set(allTasks.filter((t) => t.dayId !== today.id).map((t) => t.dayId))];
+    // Get the most recent day by finding tasks with the latest createdAt
+    let mostRecentDayId = '';
+    let mostRecentTime = 0;
+    for (const dayId of previousDayIds) {
+      const dayTasks = allTasks.filter((t) => t.dayId === dayId);
+      const latest = Math.max(...dayTasks.map((t) => new Date(t.createdAt).getTime()));
+      if (latest > mostRecentTime) {
+        mostRecentTime = latest;
+        mostRecentDayId = dayId;
+      }
+    }
+
+    if (!mostRecentDayId) return;
+
+    // Build a set of titles that were completed on ANY day (don't re-carry completed work)
+    const completedTitles = new Set(
+      allTasks
+        .filter((t) => t.status === 'completed')
+        .map((t) => t.title.toLowerCase().trim())
+    );
+
+    // Only carry incomplete tasks from the most recent previous day
+    // that haven't been completed elsewhere
     const incompletePreviousTasks = allTasks.filter(
       (t) =>
-        t.dayId !== today.id &&
-        (t.status === 'pending' || t.status === 'deferred')
+        t.dayId === mostRecentDayId &&
+        (t.status === 'pending' || t.status === 'deferred') &&
+        !completedTitles.has(t.title.toLowerCase().trim())
     );
 
     if (incompletePreviousTasks.length === 0) return;
