@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   X,
@@ -11,6 +11,8 @@ import {
   FileText,
 } from 'lucide-react';
 import type { DayEntry, Task } from '../../types';
+import { useTaskStore } from '../../store/taskStore';
+import { api } from '../../lib/api';
 
 /* ── Score Ring (compact) ── */
 function ScoreRing({ percentage, size = 80 }: { percentage: number; size?: number }) {
@@ -155,12 +157,50 @@ export default function DayDetail({ day, onClose }: { day: DayEntry; onClose: ()
     year: 'numeric',
   });
 
-  const completed = day.tasks.filter((t) => t.status === 'completed').length;
-  const deferred = day.tasks.filter((t) => t.status === 'deferred').length;
-  const pending = day.tasks.filter((t) => t.status === 'pending').length;
+  // Get tasks from the store first (works for today), then fetch from API for past days
+  const storeTasks = useTaskStore((s) => s.tasks);
+  const [dayTasks, setDayTasks] = useState<Task[]>(() =>
+    storeTasks.filter((t) => t.dayId === day.id)
+  );
+
+  useEffect(() => {
+    // If store already has tasks for this day, use those
+    const fromStore = storeTasks.filter((t) => t.dayId === day.id);
+    if (fromStore.length > 0) {
+      setDayTasks(fromStore);
+      return;
+    }
+    // Otherwise fetch from API
+    api.getTasks(day.id).then((apiTasks: any[]) => {
+      if (Array.isArray(apiTasks)) {
+        const normalized: Task[] = apiTasks.map((t: any) => ({
+          id: t.id,
+          dayId: t.day_id || t.dayId || '',
+          title: t.title || '',
+          category: t.category || 'work',
+          priority: t.priority || 'medium',
+          status: t.status || 'pending',
+          source: t.source || 'manual',
+          estimatedMinutes: t.estimated_minutes || t.estimatedMinutes,
+          dueTime: t.due_time || t.dueTime,
+          notes: t.notes,
+          deferredCount: t.deferred_count ?? t.deferredCount ?? 0,
+          sortOrder: t.sort_order ?? t.sortOrder ?? 0,
+          completedAt: t.completed_at || t.completedAt,
+          createdAt: t.created_at || t.createdAt || '',
+          updatedAt: t.updated_at || t.updatedAt || '',
+        }));
+        setDayTasks(normalized);
+      }
+    }).catch(() => {});
+  }, [day.id, storeTasks]);
+
+  const completed = dayTasks.filter((t) => t.status === 'completed').length;
+  const deferred = dayTasks.filter((t) => t.status === 'deferred').length;
+  const pending = dayTasks.filter((t) => t.status === 'pending').length;
 
   // Group tasks by category
-  const tasksByCategory = day.tasks.reduce<Record<string, Task[]>>((acc, task) => {
+  const tasksByCategory = dayTasks.reduce<Record<string, Task[]>>((acc, task) => {
     if (!acc[task.category]) acc[task.category] = [];
     acc[task.category].push(task);
     return acc;
@@ -251,7 +291,7 @@ export default function DayDetail({ day, onClose }: { day: DayEntry; onClose: ()
       {/* Task list */}
       <CollapsibleSection title="All Tasks" icon={CheckCircle2} defaultOpen>
         <div className="flex flex-col gap-1 pt-3">
-          {day.tasks.map((task) => (
+          {dayTasks.map((task) => (
             <div
               key={task.id}
               className="flex items-center gap-3 py-2 px-2 rounded-lg"
@@ -273,7 +313,7 @@ export default function DayDetail({ day, onClose }: { day: DayEntry; onClose: ()
               <CategoryBadge category={task.category} />
             </div>
           ))}
-          {day.tasks.length === 0 && (
+          {dayTasks.length === 0 && (
             <span className="text-sm py-2" style={{ color: 'var(--color-text-tertiary)' }}>
               No tasks recorded for this day.
             </span>
