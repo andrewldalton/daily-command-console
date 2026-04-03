@@ -62,8 +62,8 @@ export default function App() {
     if (authenticated) {
       const init = async () => {
         await initializeToday();
+        await loadHistory();
         loadTasks();
-        loadHistory();
         loadDailyInfo();
         initProspects();
         initializeXp();
