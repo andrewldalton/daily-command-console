@@ -28,6 +28,19 @@ interface TaskState {
 
 const STORAGE_KEY = 'dcc_tasks';
 const LAST_DATE_KEY = 'dcc_last_date';
+const CACHE_VERSION_KEY = 'dcc_cache_version';
+const CURRENT_CACHE_VERSION = '2026-04-03a';
+
+// One-time cache bust when version changes
+if (typeof window !== 'undefined') {
+  const v = localStorage.getItem(CACHE_VERSION_KEY);
+  if (v !== CURRENT_CACHE_VERSION) {
+    localStorage.removeItem('dcc_tasks');
+    localStorage.removeItem('dcc_days');
+    localStorage.removeItem(LAST_DATE_KEY);
+    localStorage.setItem(CACHE_VERSION_KEY, CURRENT_CACHE_VERSION);
+  }
+}
 
 const getTodayDateString = (): string => {
   return getTodayDateCT();
