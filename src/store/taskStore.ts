@@ -307,19 +307,12 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     );
     if (alreadyCarried) return;
 
-    // Find the most recent previous day (yesterday), not all history
-    const previousDayIds = [...new Set(allTasks.filter((t) => t.dayId !== today.id).map((t) => t.dayId))];
-    // Get the most recent day by finding tasks with the latest createdAt
-    let mostRecentDayId = '';
-    let mostRecentTime = 0;
-    for (const dayId of previousDayIds) {
-      const dayTasks = allTasks.filter((t) => t.dayId === dayId);
-      const latest = Math.max(...dayTasks.map((t) => new Date(t.createdAt).getTime()));
-      if (latest > mostRecentTime) {
-        mostRecentTime = latest;
-        mostRecentDayId = dayId;
-      }
-    }
+    // Find the most recent previous day by calendar date, not task timestamps
+    const history = useDayStore.getState().history;
+    const previousDays = history
+      .filter((d) => d.date < today.date)
+      .sort((a, b) => b.date.localeCompare(a.date));
+    const mostRecentDayId = previousDays.length > 0 ? previousDays[0].id : '';
 
     if (!mostRecentDayId) return;
 
