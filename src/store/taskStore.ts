@@ -320,14 +320,14 @@ export const useTaskStore = create<TaskState>((set, get) => ({
     );
     if (alreadyCarried) return;
 
-    // Find the most recent previous day by calendar date, not task timestamps
+    // Only carry from the immediately previous day (by calendar date)
     const history = useDayStore.getState().history;
     const previousDays = history
       .filter((d) => d.date < today.date)
       .sort((a, b) => b.date.localeCompare(a.date));
-    const mostRecentDayId = previousDays.length > 0 ? previousDays[0].id : '';
+    const mostRecentDay = previousDays.length > 0 ? previousDays[0] : null;
 
-    if (!mostRecentDayId) return;
+    if (!mostRecentDay) return;
 
     // Build a set of titles that were completed on ANY day (don't re-carry completed work)
     const completedTitles = new Set(
@@ -336,13 +336,21 @@ export const useTaskStore = create<TaskState>((set, get) => ({
         .map((t) => t.title.toLowerCase().trim())
     );
 
+    // Also treat tasks that already exist on today (any source) as carried
+    const todayTitles = new Set(
+      allTasks
+        .filter((t) => t.dayId === today.id)
+        .map((t) => t.title.toLowerCase().trim())
+    );
+
     // Only carry incomplete tasks from the most recent previous day
-    // that haven't been completed elsewhere
+    // that haven't been completed elsewhere or already exist today
     const incompletePreviousTasks = allTasks.filter(
       (t) =>
-        t.dayId === mostRecentDayId &&
+        t.dayId === mostRecentDay.id &&
         (t.status === 'pending' || t.status === 'deferred') &&
-        !completedTitles.has(t.title.toLowerCase().trim())
+        !completedTitles.has(t.title.toLowerCase().trim()) &&
+        !todayTitles.has(t.title.toLowerCase().trim())
     );
 
     if (incompletePreviousTasks.length === 0) return;
